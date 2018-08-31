@@ -1,0 +1,52 @@
+FROM hyperledger/fabric-ca-tools
+
+RUN apt-get update
+RUN apt-get install -y nano jq
+RUN apt-get update
+RUN apt-get -y install python-software-properties debconf-utils git-all build-essential python-pip python-dev curl libc6-dev-i386 autoconf software-properties-common
+RUN add-apt-repository ppa:webupd8team/java
+RUN apt-get update
+
+
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
+
+RUN curl -O https://dl.google.com/go/go1.10.linux-amd64.tar.gz
+RUN tar -xvf go1.10.linux-amd64.tar.gz
+RUN mv go /usr/local
+
+ENV PATH=$PATH:/usr/local/go/bin
+ENV GOPATH=/go/
+
+RUN echo $PATH
+RUN echo $GOPATH
+RUN /usr/local/go/bin/go version
+RUN go version
+
+WORKDIR /go/src/github.com/hyperledger/
+RUN git clone https://github.com/jcs47/fabric.git
+WORKDIR /go/src/github.com/hyperledger/fabric
+RUN git checkout release-1.1
+WORKDIR /go/src/github.com/hyperledger/fabric/
+RUN pip install --upgrade pip
+RUN devenv/setupUbuntuOnPPC64le.sh
+
+
+WORKDIR /go/src/github.com/hyperledger/fabric/
+
+RUN make configtxgen configtxlator
+WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/broadcast_msg/
+RUN go build
+WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/broadcast_config/
+RUN go build
+WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/deliver_stdout/
+RUN go build
+
+ENV FABRIC_CFG_PATH=/hyperledgerconfig
+
+RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxgen /usr/local/bin/configtxgen
+RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxlator /usr/local/bin/configtxlator
+
+ENTRYPOINT /bin/bash
+WORKDIR /
+

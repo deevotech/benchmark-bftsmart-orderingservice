@@ -1,0 +1,128 @@
+version: '2'
+
+networks:
+  bftsmart:
+
+services:
+
+  setup:
+    container_name: setup
+    image: bftsmart/bftsmart-fabric-tools
+    command: /bin/bash -c '/scripts/setup.sh 2>&1 | tee /data/logs/setup.log; sleep 99999'
+    environment:
+      - NUMBER=0
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+
+  bft.node.0:
+    container_name: bft.node.0
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-0.log'
+    environment:
+      - NUMBER=0
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /usr/lib:/usr/lib
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    depends_on:
+      - setup
+
+  bft.node.1:
+    container_name: bft.node.1
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-1.log'
+    environment:
+      - NUMBER=1
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /usr/lib:/usr/lib
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    depends_on:
+      - setup
+      - bft.node.0
+  bft.node.2:
+    container_name: bft.node.2
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-2.log'
+    environment:
+      - NUMBER=2
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /usr/lib:/usr/lib
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    depends_on:
+      - setup
+      - bft.node.0
+      - bft.node.1
+
+  bft.node.3:
+    container_name: bft.node.3
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-3.log'
+    environment:
+      - NUMBER=3
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /usr/lib:/usr/lib
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    depends_on:
+      - setup
+      - bft.node.0
+      - bft.node.1
+      - bft.node.2
+
+  orderer0.org0.exmpale.com:
+    container_name: orderer0.org0.example.com
+    image: bftsmart/bftsmart-frontendnode:x86_64-1.1.1
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/orderer
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-cert.pem
+      - ENROLLMENT_URL=https://orderer1-org0:orderer1-org0pw@rca-org0:7054
+      - ORDERER_HOME=/etc/hyperledger/orderer
+      - ORDERER_HOST=orderer0.org0.exmpale.com
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/data/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/data/org0-ca-cert.pem]
+      - ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-cert.pem]
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+      - ORG=org0
+      - ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem
+    command: /bin/bash -c '/scripts/start-orderer.sh 2>&1 | tee /data/logs/orderer1-org0.log'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
