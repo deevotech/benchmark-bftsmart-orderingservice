@@ -6,7 +6,8 @@ if [ -f ./config/currentView ]; then
 rm -f ./config/currentView
 fi
 # start frontend
-./startFrontend.sh 1000 10 9999 > /data/logs/frontend-0.success 2>&1 &
+echo $JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && ./startFrontend.sh 1000 10 9999 > /data/logs/frontend-0.success 2>&1 &
 sleep 5
 #dowait "genesis block to be created" 60 $SETUP_LOGFILE $ORDERER_GENERAL_GENESISFILE
 while [ ! -f /data/logs/frontend-0.success ] ; do

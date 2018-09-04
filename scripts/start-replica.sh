@@ -20,4 +20,5 @@ while [ ! -f /data/logs/replica-test-2.log ] ; do
  sleep 2
 done
 fi
-./startReplica.sh $NUMBER
+echo $JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && ./startReplica.sh $NUMBER

@@ -2,6 +2,7 @@ FROM hyperledger/fabric-ca-orderer
 
 RUN apt-get update
 RUN apt-get -y install python-software-properties debconf-utils git-all build-essential python-pip python-dev curl libc6-dev-i386 autoconf software-properties-common
+RUN apt-get install -y openjdk-8-jdk;
 #RUN add-apt-repository ppa:webupd8team/java
 #RUN apt-get update
 
@@ -62,10 +63,13 @@ RUN mkdir -p /go
 RUN mkdir -p /go/src
 RUN mkdir -p /go/src/github.com
 RUN mkdir -p /go/src/github.com/hyperledger
-
+RUN apt-get install -y unzip;
 WORKDIR /go/src/github.com/hyperledger
 
 RUN wget https://github.com/mcfunley/juds/archive/master.zip --output-document=/tmp/juds.zip;
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+RUN export JAVA_HOME
 
 RUN unzip /tmp/juds.zip -d /tmp/juds && \
 cd /tmp/juds/juds-master && \

@@ -8,21 +8,21 @@ sudo rm -rf setup/*
 #done
 set -e
 
-SDIR=$(dirname "$0")
-source ${SDIR}/scripts/env.sh
+#SDIR=$(dirname "$0")
+#source ${SDIR}/scripts/env.sh
 
 cd ${SDIR}
 
 # Delete docker containers
 dockerContainers=$(docker ps -a | awk '$2~/bftsmart/ {print $1}')
 if [ "$dockerContainers" != "" ]; then
-   log "Deleting existing docker containers ..."
+   echo "Deleting existing docker containers ..."
    docker rm -f $dockerContainers > /dev/null
 fi
 
 # Remove chaincode docker images
 chaincodeImages=`docker images | grep "^dev-peer" | awk '{print $3}'`
 if [ "$chaincodeImages" != "" ]; then
-   log "Removing chaincode docker images ..."
+  echo "Removing chaincode docker images ..."
    docker rmi -f $chaincodeImages > /dev/null
 fi

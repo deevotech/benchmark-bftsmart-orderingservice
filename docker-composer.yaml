@@ -11,6 +11,7 @@ services:
     command: /bin/bash -c '/scripts/setup.sh 2>&1 | tee /data/logs/setup.log; sleep 99999'
     environment:
       - NUMBER=0
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     volumes:
       - ./scripts:/scripts
       - ./data:/data
@@ -24,14 +25,13 @@ services:
     command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-0.log'
     environment:
       - NUMBER=0
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     volumes:
       - ./scripts:/scripts
       - ./data:/data
       - /usr/lib:/usr/lib
     networks:
       - bftsmart
-    ports:
-      - "11000:11000"
     depends_on:
       - setup
 
@@ -42,14 +42,13 @@ services:
     command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-1.log'
     environment:
       - NUMBER=1
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     volumes:
       - ./scripts:/scripts
       - ./data:/data
       - /usr/lib:/usr/lib
     networks:
       - bftsmart
-    ports:
-      - "11000:11000"
     depends_on:
       - setup
       - bft.node.0
@@ -60,14 +59,13 @@ services:
     command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-2.log'
     environment:
       - NUMBER=2
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     volumes:
       - ./scripts:/scripts
       - ./data:/data
       - /usr/lib:/usr/lib
     networks:
       - bftsmart
-    ports:
-      - "11000:11000"
     depends_on:
       - setup
       - bft.node.0
@@ -80,14 +78,13 @@ services:
     command: /bin/bash -c '/scripts/start-replica.sh 2>&1 | tee /data/logs/replica-test-3.log'
     environment:
       - NUMBER=3
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     volumes:
       - ./scripts:/scripts
       - ./data:/data
       - /usr/lib:/usr/lib
     networks:
       - bftsmart
-    ports:
-      - "11000:11000"
     depends_on:
       - setup
       - bft.node.0
@@ -118,6 +115,7 @@ services:
       - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
       - ORG=org0
       - ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
     command: /bin/bash -c '/scripts/start-orderer.sh 2>&1 | tee /data/logs/orderer1-org0.log'
     volumes:
       - ./scripts:/scripts
