@@ -1,5 +1,4 @@
 FROM hyperledger/fabric-ca:x86_64-1.1.1
+ENTRYPOINT /bin/bash
 WORKDIR /
-
-ENTRYPOINT ["/bin/bash"]
 
