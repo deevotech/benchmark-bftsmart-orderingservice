@@ -19,7 +19,7 @@ function main {
    copyConfigTxYaml
    generateChannelArtifacts
    log "Finished building channel artifacts"
-   #generateBftConfig
+   generateBftConfig
    touch /$SETUP_SUCCESS_FILE
 }
 
@@ -421,23 +421,36 @@ done
 for entry in `ls /data/orgs/org0/admin/msp/signcerts/`; do
     SIGN_FILE=${entry}
 done
-echo "#The ID of the membership service provider (MSP)
+echo "#Path to the genesis block for the system channel
+GENESIS=/etc/bftsmart-orderer/config/genesisblock
+
+#The ID of the membership service provider (MSP)
 MSPID=org0MSP
 
-#Certificate of the node, compliant to Fabric's MSP guidelines
-CERTIFICATE=/go/src/github.com/hyperledger/fabric-orderingservice/config/peer.pem
-
-#Private key of the node, compliant to Fabric's MSP guidelines
-PRIVKEY=/go/src/github.com/hyperledger/fabric-orderingservice/config/key.pem
-
-#Number of signer/sending threads in the pool
+#Number of block generation threads in the pool
 PARELLELISM=10
 
 #Maximum number of blocks to submit to each signer/sending thread
 BLOCKS_PER_THREAD=10000
 
 #IDs of the frontends present in the system, separate by commas
-RECEIVERS=1000
+RECEIVERS=1000,2000
+
+#Filter malformed envelopes. If this option is disabled but ENV_VALIDATION is enabled, such envelopes will eventually be discarded during validation
+FILTER_MALFORMED=true
+
+#Enable/disable envelope validation. Configuration envelopes are always verified regardless of this parameter
+ENV_VALIDATION=true
+
+#Enable/disable second block signature. Useful for benchmarking, but it must be enabled on production deployments, so that it abides to Fabric's implementation
+BOTH_SIGS=true
+
+#The acceptable difference between the state machine's time and the client's time. Only used if envelope validation is active
+#or in the case of a reconfiguration envelope
+TIME_WINDOW=15m
+
+#Calculate throughput measurements every THROUGHPUT_INTERVAL envelopes/blocks
+THROUGHPUT_INTERVAL=10000
 " > /data/node.config
 cat /data/orgs/org0/admin/msp/keystore/$KEYFILE > /data/key.pem
 cat /data/orgs/org0/admin/msp/signcerts/$SIGN_FILE > /data/peer.pem
