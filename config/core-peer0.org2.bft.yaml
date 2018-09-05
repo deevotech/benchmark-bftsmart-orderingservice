@@ -65,7 +65,7 @@ logging:
 peer:
 
     # The Peer id is used for identifying this Peer instance.
-    id: peer0.org2.bft
+    id: peer1.org2.bft
 
     # The networkId allows for logical seperation of networks
     networkId: dev
