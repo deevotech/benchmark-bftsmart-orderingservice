@@ -44,7 +44,7 @@ WORKDIR /go/src/github.com/hyperledger/fabric/
 
 RUN make orderer
 
-ENV FABRIC_CFG_PATH=/hyperledgerconfig
+ENV FABRIC_CFG_PATH=/etc/hyperledger/fabric/
 
 RUN cp /go/src/github.com/hyperledger/fabric/build/bin/orderer /usr/local/bin/orderer
 

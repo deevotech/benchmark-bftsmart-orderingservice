@@ -148,7 +148,7 @@ services:
     environment:
       - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/orderer
       - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-cert.pem
-      - ENROLLMENT_URL=https://orderer1.org0.bft:orderer1.org0.bftpw@rca.org0.bft:7054
+      - ENROLLMENT_URL=https://rca.org0.bft-admin:rca.org0.bft-adminpw@rca.org0.bft:7054
       - ORDERER_HOME=/etc/hyperledger/orderer
       - ORDERER_HOST=orderer1.org0.bft
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -167,10 +167,11 @@ services:
       - ORG=org0
       - ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem
       - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
-    command: /bin/bash -c '/scripts/start-orderer.sh 2>&1 | tee /data/logs/orderer1.org0.bft.log'
+    command: /bin/bash -c '/scripts/start-frontendnode.sh 2>&1 | tee /data/logs/orderer1.org0.bft.log'
     volumes:
       - ./scripts:/scripts
       - ./data:/data
+      - ./config:/config
     networks:
       - bftsmart
     depends_on:

@@ -23,6 +23,8 @@ if [ $NUMBER -eq 3 ] ; then
 while [ ! -f /data/logs/orderingnode-2.log ] ; do
  sleep 2
 done
+touch /data/logs/all.ordering.node.success
 fi
+
 echo $JAVA_HOME
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && ./startReplica.sh $NUMBER
