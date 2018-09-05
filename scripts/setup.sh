@@ -16,9 +16,10 @@ function main {
    registerIdentities
    getCACerts
    makeConfigTxYaml
+   copyConfigTxYaml
    generateChannelArtifacts
    log "Finished building channel artifacts"
-   generateBftConfig
+   #generateBftConfig
    touch /$SETUP_SUCCESS_FILE
 }
 
@@ -212,7 +213,7 @@ Organizations:
         # cross-org gossip communication. Note, this value is only encoded in
         # the genesis block in the Application section context.
         AnchorPeers:
-            - Host: peer1-org1
+            - Host: peer1.org1.bft
               Port: 7051
     - &org2
         # Name is the key by which this org will be referenced in channel
@@ -231,7 +232,7 @@ Organizations:
         # cross-org gossip communication. Note, this value is only encoded in
         # the genesis block in the Application section context.
         AnchorPeers:
-            - Host: peer1-org2
+            - Host: peer1.org2.bft
               Port: 7051
 ################################################################################
 #
@@ -252,7 +253,7 @@ Orderer: &OrdererDefaults
     # participation in ordering. 
     # NOTE: In the solo case, this should be a one-item list.
     Addresses:
-        - orderer1-org0:7050
+        - orderer1.org0.bft:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
@@ -424,10 +425,10 @@ echo "#The ID of the membership service provider (MSP)
 MSPID=org0MSP
 
 #Certificate of the node, compliant to Fabric's MSP guidelines
-CERTIFICATE=/opt/gopath/src/github.com/hyperledger/hyperledger-bftsmart-release-1.1/config/peer.pem
+CERTIFICATE=/go/src/github.com/hyperledger/fabric-orderingservice/config/peer.pem
 
 #Private key of the node, compliant to Fabric's MSP guidelines
-PRIVKEY=/opt/gopath/src/github.com/hyperledger/hyperledger-bftsmart-release-1.1/config/key.pem
+PRIVKEY=/go/src/github.com/hyperledger/fabric-orderingservice/config/key.pem
 
 #Number of signer/sending threads in the pool
 PARELLELISM=10
@@ -438,9 +439,13 @@ BLOCKS_PER_THREAD=10000
 #IDs of the frontends present in the system, separate by commas
 RECEIVERS=1000
 " > /data/node.config
-#cat /data/orgs/org0/admin/msp/keystore/$KEYFILE > /data/key.pem
-#cat /data/orgs/org0/admin/msp/signcerts/$SIGN_FILE > /data/peer.pem
+cat /data/orgs/org0/admin/msp/keystore/$KEYFILE > /data/key.pem
+cat /data/orgs/org0/admin/msp/signcerts/$SIGN_FILE > /data/peer.pem
 
+}
+function copyConfigTxYaml() {
+echo $FABRIC_CFG_PATH > /data/path.txt
+cp /data/configtx.yaml /etc/hyperledger/fabric/
 }
 
 set -e

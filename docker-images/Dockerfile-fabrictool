@@ -42,11 +42,9 @@ RUN go build
 WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/deliver_stdout/
 RUN go build
 
-ENV FABRIC_CFG_PATH=/hyperledgerconfig
-
 RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxgen /usr/local/bin/configtxgen
 RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxlator /usr/local/bin/configtxlator
-
-ENTRYPOINT /bin/bash
-WORKDIR /
+#RUN mkdir /hyperledgerconfig
+#ENV FABRIC_CFG_PATH /hyperledgerconfig
+#RUN export FABRIC_CFG_PATH
 

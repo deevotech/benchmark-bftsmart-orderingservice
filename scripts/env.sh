@@ -93,23 +93,23 @@ function initOrgVars {
    fi
    ORG=$1
    ORG_CONTAINER_NAME=${ORG//./-}
-   ROOT_CA_HOST=bft.rca.${ORG}
-   ROOT_CA_NAME=bft.rca.${ORG}
+   ROOT_CA_HOST=rca.${ORG}.bft
+   ROOT_CA_NAME=rca.${ORG}.bft
    ROOT_CA_LOGFILE=$LOGDIR/${ROOT_CA_NAME}.log
-   INT_CA_HOST=ica-${ORG}
-   INT_CA_NAME=ica-${ORG}
+   INT_CA_HOST=ica.${ORG}.bft
+   INT_CA_NAME=ica.${ORG}.bft
    INT_CA_LOGFILE=$LOGDIR/${INT_CA_NAME}.log
 
    # Root CA admin identity
-   ROOT_CA_ADMIN_USER=bft.rca.${ORG}-admin
+   ROOT_CA_ADMIN_USER=rca.${ORG}.bft-admin
    ROOT_CA_ADMIN_PASS=${ROOT_CA_ADMIN_USER}pw
    ROOT_CA_ADMIN_USER_PASS=${ROOT_CA_ADMIN_USER}:${ROOT_CA_ADMIN_PASS}
    # Root CA intermediate identity to bootstrap the intermediate CA
-   ROOT_CA_INT_USER=bft.ica.${ORG}
+   ROOT_CA_INT_USER=ica.${ORG}.bft
    ROOT_CA_INT_PASS=${ROOT_CA_INT_USER}pw
    ROOT_CA_INT_USER_PASS=${ROOT_CA_INT_USER}:${ROOT_CA_INT_PASS}
    # Intermediate CA admin identity
-   INT_CA_ADMIN_USER=bft.ica.${ORG}-admin
+   INT_CA_ADMIN_USER=ica.${ORG}.bft-admin
    INT_CA_ADMIN_PASS=${INT_CA_ADMIN_USER}pw
    INT_CA_ADMIN_USER_PASS=${INT_CA_ADMIN_USER}:${INT_CA_ADMIN_PASS}
    # Admin identity for the org
@@ -150,8 +150,8 @@ function initOrdererVars {
    fi
    initOrgVars $1
    NUM=$2
-   ORDERER_HOST=orderer${NUM}.${ORG}.bft.com
-   ORDERER_NAME=orderer${NUM}.${ORG}.bft.com
+   ORDERER_HOST=orderer${NUM}.${ORG}.bft
+   ORDERER_NAME=orderer${NUM}.${ORG}.bft
    ORDERER_PASS=${ORDERER_NAME}pw
    ORDERER_NAME_PASS=${ORDERER_NAME}:${ORDERER_PASS}
    ORDERER_LOGFILE=$LOGDIR/${ORDERER_NAME}.log
@@ -199,8 +199,8 @@ function initPeerVars {
    fi
    initOrgVars $1
    NUM=$2
-   PEER_HOST=peer${NUM}.${ORG}.bft.com
-   PEER_NAME=peer${NUM}.${ORG}.bft.com
+   PEER_HOST=peer${NUM}.${ORG}.bft
+   PEER_NAME=peer${NUM}.${ORG}.bft
    PEER_PASS=${PEER_NAME}pw
    PEER_NAME_PASS=${PEER_NAME}:${PEER_PASS}
    PEER_LOGFILE=$LOGDIR/${PEER_NAME}.log

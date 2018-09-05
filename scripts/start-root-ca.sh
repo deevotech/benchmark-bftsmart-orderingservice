@@ -8,6 +8,7 @@
 set -e
 
 # Initialize the root CA
+rm -rf $FABRIC_CA_SERVER_HOME/*
 fabric-ca-server init -b $BOOTSTRAP_USER_PASS
 
 # Copy the root CA's signing certificate to the data directory to be used by others

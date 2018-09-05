@@ -88,6 +88,3 @@ RUN cd /go/src/github.com/hyperledger/fabric-orderingservice && \
 ant clean && \
 ant;
 RUN rm -rf /tmp/fabric-orderingservice.zip;
-
-ENTRYPOINT /bin/bash
-WORKDIR /
