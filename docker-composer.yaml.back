@@ -150,8 +150,8 @@ services:
       - bft.node.1
       - bft.node.2
 
-  orderer1.org0.bft.com:
-    container_name: orderer1.org0.bft.com
+  orderer1.org0.bft:
+    container_name: orderer1.org0.bft
     image: bftsmart/bftsmart-frontendnode:x86_64-1.1.1
     environment:
       - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/orderer
