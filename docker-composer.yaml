@@ -262,3 +262,18 @@ services:
       - bftsmart
     depends_on:
       - orderer1.org0.bft
+  run:
+    container_name: run
+    image: bftsmart/bftsmart-fabric-tools
+    environment:
+      - GOPATH=/opt/gopath
+    command: /bin/bash -c 'sleep 3;/scripts/run-bftsmart.sh 2>&1 | tee /data/logs/run.log; sleep 99999'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    depends_on:
+      - orderer1.org0.bft
+      - peer1.org1.bft
+      - peer1.org2.bft
