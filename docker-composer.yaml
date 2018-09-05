@@ -85,7 +85,6 @@ services:
     volumes:
       - ./scripts:/scripts
       - ./data:/data
-      - /usr/lib:/usr/lib
     networks:
       - bftsmart
     depends_on:
@@ -102,7 +101,6 @@ services:
     volumes:
       - ./scripts:/scripts
       - ./data:/data
-      - /usr/lib:/usr/lib
     networks:
       - bftsmart
     depends_on:
@@ -119,7 +117,6 @@ services:
     volumes:
       - ./scripts:/scripts
       - ./data:/data
-      - /usr/lib:/usr/lib
     networks:
       - bftsmart
     depends_on:
@@ -138,7 +135,6 @@ services:
     volumes:
       - ./scripts:/scripts
       - ./data:/data
-      - /usr/lib:/usr/lib
     networks:
       - bftsmart
     depends_on:
