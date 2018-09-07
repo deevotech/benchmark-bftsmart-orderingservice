@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-ca-peer
+FROM hyperledger/fabric-peer:x86_64-1.1.1
 
 RUN apt-get update
 RUN apt-get -y install python-software-properties debconf-utils git build-essential python-pip python-dev curl software-properties-common

@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-ca-tools
+FROM hyperledger/fabric-tools:x86_64-1.1.1
 
 RUN apt-get update
 RUN apt-get install -y nano jq
