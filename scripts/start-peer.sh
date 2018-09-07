@@ -35,7 +35,7 @@ fabric-ca-client enroll -d -u $ENROLLMENT_URL -M $CORE_PEER_MSPCONFIGPATH
 finishMSPSetup $CORE_PEER_MSPCONFIGPATH
 copyAdminCert $CORE_PEER_MSPCONFIGPATH
 
-cp /config/core-peer1.org1.bft.yaml /data/orgs/${ORG}/admin
+cp /config/core-peer1.${ORG}.bft.yaml /data/orgs/${ORG}/admin/
 
 # Start the peer
 log "Starting peer '$CORE_PEER_ID' with MSP at '$CORE_PEER_MSPCONFIGPATH'"
@@ -43,8 +43,12 @@ while [ ! -f /data/logs/orderer.successful ] ; do
  sleep 2
 done
 if [ ! -d /etc/hyperledger/fabric/admincerts ] ; then
+mkdir -p /etc/hyperledger/fabric/peer
+mkdir -p /etc/hyperledger/fabric/peer/msp
+mkdir /etc/hyperledger/fabric/peer/msp/admincerts
 mkdir /etc/hyperledger/fabric/admincerts
 cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/admincerts/
+cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/peer/msp/admincerts
 fi
 env | grep CORE
 peer node start

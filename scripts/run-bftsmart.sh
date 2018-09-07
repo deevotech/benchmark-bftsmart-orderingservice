@@ -41,6 +41,7 @@ function main {
          joinChannel
          #COUNT=$((COUNT+1))
       #done
+      sleep 2
    done
 
    # Update the anchor peers
@@ -49,13 +50,14 @@ function main {
       switchToAdminIdentity
       logr "Updating anchor peers for $PEER_HOST ..."
       peer channel update -c $CHANNEL_NAME -f $ANCHOR_TX_FILE $ORDERER_CONN_ARGS
-      sleep 5
+      sleep 2
    done
 
    # Install chaincode on the 1st peer in each org
    for ORG in $PEER_ORGS; do
       initPeerVars $ORG 1
       installChaincode
+      sleep 5
    done
 
    # Instantiate chaincode on the 1st peer of the 2nd org
@@ -77,6 +79,7 @@ function main {
    logr "Sending invoke transaction to $PEER_HOST ..."
    peer chaincode invoke -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS
 
+   sleep 5
    ## Install chaincode on 2nd peer of 2nd org
    initPeerVars ${PORGS[1]} 1
    installChaincode
