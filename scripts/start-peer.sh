@@ -11,6 +11,7 @@ source $(dirname "$0")/env.sh
 echo $FABRIC_CFG_PATH > /data/$PEER_HOST.log
 #cp /temp/peer /usr/local/bin/
 awaitSetup
+sleep 10
 
 # Although a peer may use the same TLS key and certificate file for both inbound and outbound TLS,
 # we generate a different key and certificate for inbound and outbound TLS simply to show that it is permissible
@@ -51,4 +52,5 @@ cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/admincerts/
 cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/peer/msp/admincerts
 fi
 env | grep CORE
+sleep 10
 peer node start
