@@ -1,1 +1,34 @@
 FROM hyperledger/fabric-ca
+RUN apt-get update
+RUN apt-get -y install python-software-properties debconf-utils git build-essential python-pip python-dev curl software-properties-common
+RUN curl -O https://dl.google.com/go/go1.10.linux-amd64.tar.gz
+RUN tar -xvf go1.10.linux-amd64.tar.gz
+RUN mv go /usr/local
+
+ENV PATH=$PATH:/usr/local/go/bin
+ENV GOPATH=/go
+
+RUN echo $PATH
+RUN echo $GOPATH
+RUN /usr/local/go/bin/go version
+RUN go version
+RUN mkdir -p /go/src
+RUN mkdir -p /go/src/github.com
+RUN mkdir -p /go/src/github.com/hyperledger
+WORKDIR /go/src/github.com/hyperledger/
+RUN git clone https://github.com/datlv/hyperledger-fabric-bftsmart.git
+RUN mv /go/src/github.com/hyperledger/hyperledger-fabric-bftsmart /go/src/github.com/hyperledger/fabric
+WORKDIR /go/src/github.com/hyperledger/fabric
+RUN git checkout release-1.1
+WORKDIR /go/src/github.com/hyperledger/fabric/
+RUN pip install --upgrade pip
+RUN devenv/setupUbuntuOnPPC64le.sh
+
+WORKDIR /go/src/github.com/hyperledger/
+RUN git clone https://github.com/datlv/fabric-ca.git
+WORKDIR /go/src/github.com/hyperledger/fabric-ca
+RUN git checkout release-1.1
+RUN git pull
+WORKDIR /go/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-server
+RUN go build
+RUN cp /go/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-server/fabric-ca-server /usr/local/bin/

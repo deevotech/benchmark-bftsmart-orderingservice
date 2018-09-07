@@ -49,6 +49,7 @@ function main {
       switchToAdminIdentity
       logr "Updating anchor peers for $PEER_HOST ..."
       peer channel update -c $CHANNEL_NAME -f $ANCHOR_TX_FILE $ORDERER_CONN_ARGS
+      sleep 5
    done
 
    # Install chaincode on the 1st peer in each org
@@ -63,6 +64,7 @@ function main {
    switchToAdminIdentity
    logr "Instantiating chaincode on $PEER_HOST ..."
    peer chaincode instantiate -C $CHANNEL_NAME -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "$POLICY" $ORDERER_CONN_ARGS
+   sleep 5
 
    # Query chaincode from the 1st peer of the 1st org
    initPeerVars ${PORGS[0]} 1
@@ -80,16 +82,18 @@ function main {
    installChaincode
 
    # Query chaincode on 2nd peer of 2nd org
-   sleep 10
    initPeerVars ${PORGS[1]} 1
    switchToUserIdentity
    chaincodeQuery 90
 
+
    initPeerVars ${PORGS[0]} 1
    switchToUserIdentity
 
+
    # Revoke the user and generate CRL using admin's credentials
    revokeFabricUserAndGenerateCRL
+   sleep 5
 
    # Fetch config block
    fetchConfigBlock
@@ -136,7 +140,7 @@ function joinChannel {
          fatalr "Peer $PEER_HOST failed to join channel '$CHANNEL_NAME' in $MAX_RETRY retries"
       fi
       COUNT=$((COUNT+1))
-      sleep 1
+      sleep 2
    done
 }
 

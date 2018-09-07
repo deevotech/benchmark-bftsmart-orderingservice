@@ -52,3 +52,12 @@ RUN git clone https://github.com/hyperledger/fabric-samples.git
 #ENV FABRIC_CFG_PATH /hyperledgerconfig
 #RUN export FABRIC_CFG_PATH
 
+WORKDIR /go/src/github.com/hyperledger/
+RUN git clone https://github.com/datlv/fabric-ca.git
+WORKDIR /go/src/github.com/hyperledger/fabric-ca
+RUN git checkout release-1.1
+RUN git pull
+WORKDIR /go/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client
+RUN go build
+RUN cp /go/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client /usr/local/bin/
+

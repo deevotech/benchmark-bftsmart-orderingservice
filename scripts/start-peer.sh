@@ -9,6 +9,7 @@ set -e
 
 source $(dirname "$0")/env.sh
 echo $FABRIC_CFG_PATH > /data/$PEER_HOST.log
+#cp /temp/peer /usr/local/bin/
 awaitSetup
 
 # Although a peer may use the same TLS key and certificate file for both inbound and outbound TLS,
