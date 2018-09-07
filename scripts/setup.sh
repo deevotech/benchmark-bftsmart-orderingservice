@@ -427,6 +427,12 @@ GENESIS=/etc/bftsmart-orderer/config/genesisblock
 #The ID of the membership service provider (MSP)
 MSPID=org0MSP
 
+#Certificate of the node, compliant to Fabric's MSP guidelines
+CERTIFICATE=/etc/bftsmart-orderer/config/peer.pem
+
+#Private key of the node, compliant to Fabric's MSP guidelines
+PRIVKEY=/etc/bftsmart-orderer/config/key.pem
+
 #Number of block generation threads in the pool
 PARELLELISM=10
 

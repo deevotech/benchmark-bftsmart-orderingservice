@@ -27,9 +27,9 @@ make install;
 RUN rm -rf /tmp/juds.zip
 RUN rm -rf /tmp/juds
 
-RUN wget https://github.com/bft-smart/fabric-orderingservice/archive/release-1.1.zip --output-document=/tmp/fabric-orderingservice.zip
+RUN wget https://github.com/datlv/hyperledger-bftsmart-orderering/archive/release-1.1.zip --output-document=/tmp/fabric-orderingservice.zip
 RUN unzip /tmp/fabric-orderingservice.zip -d /go/src/github.com/hyperledger/
-RUN mv /go/src/github.com/hyperledger/fabric-orderingservice-release-1.1 /go/src/github.com/hyperledger/fabric-orderingservice
+RUN mv /go/src/github.com/hyperledger/hyperledger-bftsmart-orderering-release-1.1 /go/src/github.com/hyperledger/fabric-orderingservice
 WORKDIR /go/src/github.comf/hyperledger/fabric-orderingservice
 RUN cd /go/src/github.com/hyperledger/fabric-orderingservice && \
 ant clean && \

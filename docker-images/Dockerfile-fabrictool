@@ -24,13 +24,15 @@ RUN /usr/local/go/bin/go version
 RUN go version
 
 WORKDIR /go/src/github.com/hyperledger/
-RUN git clone https://github.com/jcs47/fabric.git
+RUN git clone https://github.com/datlv/hyperledger-fabric-bftsmart.git
+RUN mv /go/src/github.com/hyperledger/hyperledger-fabric-bftsmart /go/src/github.com/hyperledger/fabric
 WORKDIR /go/src/github.com/hyperledger/fabric
 RUN git checkout release-1.1
 WORKDIR /go/src/github.com/hyperledger/fabric/
 RUN pip install --upgrade pip
 RUN devenv/setupUbuntuOnPPC64le.sh
-
+#RUN make peer
+#RUN cp /go/src/github.com/hyperledger/fabric/build/bin/peer /usr/local/bin/peer
 
 WORKDIR /go/src/github.com/hyperledger/fabric/
 
@@ -44,6 +46,8 @@ RUN go build
 
 RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxgen /usr/local/bin/configtxgen
 RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxlator /usr/local/bin/configtxlator
+WORKDIR /go/src/github.com/hyperledger/
+RUN git clone https://github.com/hyperledger/fabric-samples.git
 #RUN mkdir /hyperledgerconfig
 #ENV FABRIC_CFG_PATH /hyperledgerconfig
 #RUN export FABRIC_CFG_PATH

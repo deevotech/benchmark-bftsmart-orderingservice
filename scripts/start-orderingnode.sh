@@ -6,12 +6,13 @@ done
 cp /data/genesis.block /etc/bftsmart-orderer/config/genesisblock
 cp /data/key.pem /etc/bftsmart-orderer/config/key.pem
 cp /data/peer.pem /etc/bftsmart-orderer/config/peer.pem
-cp /data/key.pem /etc/bftsmart-orderer/config/key.pem
 cp /data/node.config /etc/bftsmart-orderer/config/node.config
+cp /config/hosts.config /etc/bftsmart-orderer/config/hosts.config
 
-cp /data/peer.pem /go/src/github.com/hyperledger/fabric-orderingservice/config/peer.pem
+cp /data/key.pem /go/src/github.com/hyperledger/fabric-orderingservice/config/key.pem
 cp /data/peer.pem /go/src/github.com/hyperledger/fabric-orderingservice/config/peer.pem
 cp /data/node.config /go/src/github.com/hyperledger/fabric-orderingservice/config/node.config
+cp /config/hosts.config /go/src/github.com/hyperledger/fabric-orderingservice/config/hosts.config
 cd /go/src/github.com/hyperledger/fabric-orderingservice;
 cat config/node.config > /data/orderingnode-config-${NUMBER}.config
 if [ -f ./config/currentView ]; then
