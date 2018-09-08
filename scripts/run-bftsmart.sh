@@ -79,12 +79,12 @@ function main {
    logr "Sending invoke transaction to $PEER_HOST ..."
    peer chaincode invoke -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS
 
-   sleep 5
+   #sleep 5
    ## Install chaincode on 2nd peer of 2nd org
-   initPeerVars ${PORGS[1]} 1
-   installChaincode
+   #initPeerVars ${PORGS[1]} 1
+   #installChaincode
 
-   # Query chaincode on 2nd peer of 2nd org
+   # Query chaincode on 1nd peer of 2nd org
    initPeerVars ${PORGS[1]} 1
    switchToUserIdentity
    chaincodeQuery 90

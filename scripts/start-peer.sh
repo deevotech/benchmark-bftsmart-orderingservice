@@ -37,6 +37,7 @@ finishMSPSetup $CORE_PEER_MSPCONFIGPATH
 copyAdminCert $CORE_PEER_MSPCONFIGPATH
 
 cp /config/core-peer1.${ORG}.bft.yaml /data/orgs/${ORG}/admin/
+mkdir -p $CORE_PEER_MSPCONFIGPATH//crls
 
 # Start the peer
 log "Starting peer '$CORE_PEER_ID' with MSP at '$CORE_PEER_MSPCONFIGPATH'"

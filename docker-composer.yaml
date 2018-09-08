@@ -215,7 +215,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.bft:7051
       - ORG=org1
       - ORG_ADMIN_CERT=/data/orgs/org1/msp/admincerts/cert.pem
-      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
+#      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
       - CORE_CHAINCODE_MODE=net
     working_dir: /go/src/github.com/hyperledger/fabric/peer
     command: /bin/bash -c '/scripts/start-peer.sh 2>&1 | tee /data/logs/peer1.org1.bft.log'
@@ -260,7 +260,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.bft:7051
       - ORG=org2
       - ORG_ADMIN_CERT=/data/orgs/org2/msp/admincerts/cert.pem
-      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
+#      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
       - CORE_CHAINCODE_MODE=net
     working_dir: /go/src/github.com/hyperledger/fabric/peer
     command: /bin/bash -c '/scripts/start-peer.sh 2>&1 | tee /data/logs/peer1.org2.bft.log'
