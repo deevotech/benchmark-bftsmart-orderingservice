@@ -52,6 +52,9 @@ mkdir /etc/hyperledger/fabric/admincerts
 cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/admincerts/
 cp /data/orgs/${ORG}/msp/admincerts/cert.pem /etc/hyperledger/fabric/peer/msp/admincerts
 fi
+mkdir -p /data/$PEER_NAME
+
+cp -R $FABRIC_CA_CLIENT_HOME/* /data/$PEER_NAME/
 env | grep CORE
 sleep 10
 peer node start

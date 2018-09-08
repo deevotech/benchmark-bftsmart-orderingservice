@@ -1,0 +1,92 @@
+{
+  "fabric": {
+    "cryptodir": "network/fabric/mynetwork",
+    "network": {
+      "orderer": {
+        "url": "grpcs://localhost:7050",
+        "mspid": "org0MSP",
+        "domain": "orderer1.org0.bft",
+        "user": {
+          "key": "network/fabric/mynetwork/orgs/org0/admin/msp/keystore/a3338e2c76a74716f347651c7b314498fcbd07fb5ac5bb9eb7e7315a1b4caded_sk",
+          "cert": "network/fabric/mynetwork/orgs/org0/admin/msp/signcerts/cert.pem"
+        },
+        "server-hostname": "orderer1.org0.bft",
+        "tls_cacerts": "network/fabric/mynetwork/org0-ca-cert.pem"
+      },
+      "org1": {
+        "name": "org1",
+        "mspid": "org1MSP",
+        "domain": "peer1.org1.bft",
+        "user": {
+          "key": "network/fabric/mynetwork/orgs/org1/admin/msp/keystore/b6a77d0ba0db8f709ee8a61696f83b089f4de5e68c013534509f605c5cba168c_sk",
+          "cert": "network/fabric/mynetwork/orgs/org1/admin/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://localhost:8054",
+          "name": "rca.org1.bft"
+        },
+        "peer1": {
+          "requests": "grpcs://localhost:7051",
+          "events": "grpcs://localhost:7053",
+          "server-hostname": "peer1.org1.bft",
+          "tls_cacerts": "network/fabric/mynetwork/org1-ca-cert.pem"
+        }
+      },
+      "org2": {
+        "name": "org2",
+        "mspid": "org2MSP",
+        "domain": "peer1.org2.bft",
+        "user": {
+          "key": "network/fabric/mynetwork/orgs/org2/admin/msp/keystore/55c2549a68ad92c9940b9eec156e890b24beec9e614c4aae93df29a3b9530466_sk",
+          "cert": "network/fabric/mynetwork/orgs/org2/admin/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://localhost:9054",
+          "name": "rca.org2.bft"
+        },
+        "peer2": {
+          "requests": "grpcs://localhost:8051",
+          "events": "grpcs://localhost:8053",
+          "server-hostname": "peer1.org2.bft",
+          "tls_cacerts": "network/fabric/mynetwork/org2-ca-cert.pem"
+        }
+      }
+    },
+    "channel": [
+      {
+        "name": "mychannel",
+        "config": "network/fabric/mynetwork/mychannel.tx",
+        "organizations": ["org1", "org2"],
+        "deployed": false
+      }
+    ],
+    "chaincodes": [{"id": "simple", "path": "contract/fabric/simple/go", "language":"golang", "version": "v0", "channel": "mychannel"}],
+    "endorsement-policy": {
+      "identities": [
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org1MSP"
+          }
+        },
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org2MSP"
+          }
+        }
+      ],
+      "policy": { "2-of": [{"signed-by": 1}, {"signed-by": 1}]}
+    },
+    "context": {
+      "open": "mychannel",
+      "query": "mychannel"
+    }
+  },
+  "info" : {
+    "Version": "1.0.5",
+    "Size": "2 Peers",
+    "Orderer": "bftsmart",
+    "Distribution": "Single Host"
+  }
+}

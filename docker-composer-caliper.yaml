@@ -1,0 +1,292 @@
+version: '2'
+
+networks:
+  bftsmart:
+
+services:
+
+  rca.org0.bft:
+    container_name: rca.org0.bft
+    image: bftsmart/bftsmart-fabric-ca
+    command: /bin/bash -c '/scripts/start-root-ca.sh 2>&1 | tee /data/logs/rca.org0.bft.log'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca.org0.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.bft
+      - FABRIC_CA_SERVER_DEBUG=false
+      - BOOTSTRAP_USER_PASS=rca.org0.bft-admin:rca.org0.bft-adminpw
+      - TARGET_CERTFILE=/data/org0-ca-cert.pem
+      - FABRIC_ORGS=org0 org1 org2
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    ports:
+      - 7054:7054
+  rca.org1.bft:
+    container_name: rca.org1.bft
+    image: bftsmart/bftsmart-fabric-ca
+    command: /bin/bash -c '/scripts/start-root-ca.sh 2>&1 | tee /data/logs/rca.org1.bft.log'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca.org1.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org1.bft
+      - FABRIC_CA_SERVER_DEBUG=false
+      - BOOTSTRAP_USER_PASS=rca.org1.bft-admin:rca.org1.bft-adminpw
+      - TARGET_CERTFILE=/data/org1-ca-cert.pem
+      - FABRIC_ORGS=org0 org1 org2
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    ports:
+      - 8054:7054
+  rca.org2.bft:
+    container_name: rca.org2.bft
+    image: bftsmart/bftsmart-fabric-ca
+    command: /bin/bash -c '/scripts/start-root-ca.sh 2>&1 | tee /data/logs/rca.org2.bft.log'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca.org2.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.bft
+      - FABRIC_CA_SERVER_DEBUG=false
+      - BOOTSTRAP_USER_PASS=rca.org2.bft-admin:rca.org2.bft-adminpw
+      - TARGET_CERTFILE=/data/org2-ca-cert.pem
+      - FABRIC_ORGS=org0 org1 org2
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    ports:
+      - 9054:7054
+
+  setup:
+    container_name: setup
+    image: bftsmart/bftsmart-fabric-tools
+    command: /bin/bash -c '/scripts/setup-caliper.sh 2>&1 | tee /data/logs/setup.log; sleep 99999'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bftsmart
+    depends_on:
+      - rca.org0.bft
+      - rca.org1.bft
+      - rca.org2.bft
+
+  bft.node.0:
+    container_name: bft.node.0
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-orderingnode.sh 2>&1 | tee /data/logs/orderingnode-0.log'
+    environment:
+      - NUMBER=0
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
+
+  bft.node.1:
+    container_name: bft.node.1
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-orderingnode.sh 2>&1 | tee /data/logs/orderingnode-1.log'
+    environment:
+      - NUMBER=1
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
+      - bft.node.0
+  bft.node.2:
+    container_name: bft.node.2
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-orderingnode.sh 2>&1 | tee /data/logs/orderingnode-2.log'
+    environment:
+      - NUMBER=2
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
+      - bft.node.0
+      - bft.node.1
+
+  bft.node.3:
+    container_name: bft.node.3
+    working_dir: /go/src/github.com/hyperledger/fabric-orderingservice
+    image: bftsmart/bftsmart-orderingnode:x86_64-1.1.1
+    command: /bin/bash -c '/scripts/start-orderingnode.sh 2>&1 | tee /data/logs/orderingnode-3.log'
+    environment:
+      - NUMBER=3
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
+      - bft.node.0
+      - bft.node.1
+      - bft.node.2
+  orderer1.org0.bft:
+    container_name: orderer1.org0.bft
+    image: bftsmart/bftsmart-frontendnode:x86_64-1.1.1
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/orderer
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org0-ca-cert.pem
+      - ENROLLMENT_URL=https://rca.org0.bft-admin:rca.org0.bft-adminpw@rca.org0.bft:7054
+      - ORDERER_HOME=/etc/hyperledger/orderer
+      - ORDERER_HOST=orderer1.org0.bft
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/data/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/data/org0-ca-cert.pem]
+      - ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=[/data/org0-ca-cert.pem]
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+      - ORG=org0
+      - ORG_ADMIN_CERT=/data/orgs/org0/msp/admincerts/cert.pem
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+    command: /bin/bash -c '/scripts/start-frontendnode.sh 2>&1 | tee /data/logs/orderer1.org0.bft.log'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - setup
+      - bft.node.0
+      - bft.node.1
+      - bft.node.2
+      - bft.node.3
+    ports:
+      - 7050:7050
+  peer1.org1.bft:
+    container_name: peer1.org1.bft
+    image: bftsmart/bftsmart-peer:x86_64-1.1.1
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/fabric/peer
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org1-ca-cert.pem
+      - ENROLLMENT_URL=https://rca.org1.bft-admin:rca.org1.bft-adminpw@rca.org1.bft:7054
+      - PEER_NAME=peer1.org1.bft
+      - PEER_HOME=/etc/hyperledger/fabric/peer
+      - PEER_HOST=peer1.org1.bft
+      - PEER_NAME_PASS=peer1.org1.bft:peer1.org1.bftpw
+      - CORE_PEER_ID=peer1.org1.bft
+      - CORE_PEER_ADDRESS=peer1.org1.bft:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_bftsmart
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/data/org1-ca-cert.pem
+      - CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
+      - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/org1-ca-cert.pem
+      - CORE_PEER_TLS_CLIENTCERT_FILE=/data/tls/peer1.org1.bft-client.crt
+      - CORE_PEER_TLS_CLIENTKEY_FILE=/data/tls/peer1.org1.bft-client.key
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.bft:7051
+      - ORG=org1
+      - ORG_ADMIN_CERT=/data/orgs/org1/msp/admincerts/cert.pem
+#      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
+      - CORE_CHAINCODE_MODE=net
+    working_dir: /go/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c '/scripts/start-peer.sh 2>&1 | tee /data/logs/peer1.org1.bft.log'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /var/run:/host/var/run
+      - /opt/gopath/src/github.com/hyperledger/fabric/build/bin:/temp
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - orderer1.org0.bft
+    ports:
+      - 7051:7051
+      - 7052:7052
+      - 7053:7053
+  peer1.org2.bft:
+    container_name: peer1.org2.bft
+    image: bftsmart/bftsmart-peer:x86_64-1.1.1
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/fabric/peer
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/org2-ca-cert.pem
+      - ENROLLMENT_URL=https://rca.org2.bft-admin:rca.org2.bft-adminpw@rca.org2.bft:7054
+      - PEER_NAME=peer1.org2.bft
+      - PEER_HOME=/etc/hyperledger/fabric/peer
+      - PEER_HOST=peer1.org2.bft
+      - PEER_NAME_PASS=peer1.org2.bft:peer1.org2.bftpw
+      - CORE_PEER_ID=peer1.org2.bft
+      - CORE_PEER_ADDRESS=peer1.org2.bft:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_bftsmart
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/data/org2-ca-cert.pem
+      - CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
+      - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/data/org2-ca-cert.pem
+      - CORE_PEER_TLS_CLIENTCERT_FILE=/data/tls/peer1.org2.bft-client.crt
+      - CORE_PEER_TLS_CLIENTKEY_FILE=/data/tls/peer1.org2.bft-client.key
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.bft:7051
+      - ORG=org2
+      - ORG_ADMIN_CERT=/data/orgs/org2/msp/admincerts/cert.pem
+#      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:x86_64-1.1.1
+      - CORE_CHAINCODE_MODE=net
+    working_dir: /go/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c '/scripts/start-peer.sh 2>&1 | tee /data/logs/peer1.org2.bft.log'
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - /var/run:/host/var/run
+      - /opt/gopath/src/github.com/hyperledger/fabric/build/bin:/temp
+      - ./config:/config
+    networks:
+      - bftsmart
+    depends_on:
+      - orderer1.org0.bft
+    ports:
+      - 8051:7051
+      - 8052:7052
+      - 8053:7053

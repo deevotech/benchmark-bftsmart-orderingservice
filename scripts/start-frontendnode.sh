@@ -47,6 +47,9 @@ fabric-ca-client enroll -d -u $ENROLLMENT_URL -M $ORDERER_GENERAL_LOCALMSPDIR
 finishMSPSetup $ORDERER_GENERAL_LOCALMSPDIR
 copyAdminCert $ORDERER_GENERAL_LOCALMSPDIR
 
+mkdir -p /data/orderer
+cp -R /etc/hyperledger/orderer/* /data/orderer/
+
 # Wait for the genesis block to be created
 dowait "genesis block to be created" 60 $SETUP_LOGFILE $ORDERER_GENERAL_GENESISFILE
 # Start the orderer
