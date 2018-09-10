@@ -1,25 +1,25 @@
 {
   "fabric": {
-    "cryptodir": "network/fabric/mynetwork",
+    "cryptodir": "network/fabric/mynetwork/crypto-config",
     "network": {
       "orderer": {
-        "url": "grpcs://localhost:7050",
+        "url": "grpcs://127.0.0.1:7050",
         "mspid": "org0MSP",
-        "domain": "orderer1.org0.bft",
+        "domain": "bft",
         "user": {
-          "key": "network/fabric/mynetwork/orgs/org0/admin/msp/keystore/a3338e2c76a74716f347651c7b314498fcbd07fb5ac5bb9eb7e7315a1b4caded_sk",
-          "cert": "network/fabric/mynetwork/orgs/org0/admin/msp/signcerts/cert.pem"
+          "key": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.bft/users/Admin@org0.bft/msp/keystore/bbef0e33878839686d53eda853279006192b95f0186bc5958310238280a48c5d_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.bft/users/Admin@org0.bft/msp/signcerts/Admin@org0.bft-cert.pem"
         },
         "server-hostname": "orderer1.org0.bft",
-        "tls_cacerts": "network/fabric/mynetwork/org0-ca-cert.pem"
+        "tls_cacerts": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.bft/orderers/orderer1.org0.bft/tls/ca.crt"
       },
       "org1": {
-        "name": "org1",
+        "name": "peer1.org1.bft",
         "mspid": "org1MSP",
-        "domain": "peer1.org1.bft",
+        "domain": "org1.bft",
         "user": {
-          "key": "network/fabric/mynetwork/orgs/org1/admin/msp/keystore/b6a77d0ba0db8f709ee8a61696f83b089f4de5e68c013534509f605c5cba168c_sk",
-          "cert": "network/fabric/mynetwork/orgs/org1/admin/msp/signcerts/cert.pem"
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.bft/users/Admin@org1.bft/msp/keystore/e95b99de015bb3d22eb3792abc5e48996359cdaff781833aed375df17746e0e7_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.bft/users/Admin@org1.bft/msp/signcerts/Admin@org1.bft-cert.pem"
         },
         "ca": {
           "url": "https://localhost:8054",
@@ -29,26 +29,26 @@
           "requests": "grpcs://localhost:7051",
           "events": "grpcs://localhost:7053",
           "server-hostname": "peer1.org1.bft",
-          "tls_cacerts": "network/fabric/mynetwork/org1-ca-cert.pem"
+          "tls_cacerts": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.bft/peers/peer1.org1.bft/tls/ca.crt"
         }
       },
       "org2": {
-        "name": "org2",
+        "name": "peer1.org2.bft",
         "mspid": "org2MSP",
-        "domain": "peer1.org2.bft",
+        "domain": "org2.bft",
         "user": {
-          "key": "network/fabric/mynetwork/orgs/org2/admin/msp/keystore/55c2549a68ad92c9940b9eec156e890b24beec9e614c4aae93df29a3b9530466_sk",
-          "cert": "network/fabric/mynetwork/orgs/org2/admin/msp/signcerts/cert.pem"
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.bft/users/Admin@org2.bft/msp/keystore/0b06ef82406762446066c3dafe4c533a3657d0280144440136d051961391b13d_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.bft/users/Admin@org2.bft/msp/signcerts/Admin@org2.bft-cert.pem"
         },
         "ca": {
           "url": "https://localhost:9054",
           "name": "rca.org2.bft"
         },
-        "peer2": {
+        "peer1": {
           "requests": "grpcs://localhost:8051",
           "events": "grpcs://localhost:8053",
           "server-hostname": "peer1.org2.bft",
-          "tls_cacerts": "network/fabric/mynetwork/org2-ca-cert.pem"
+          "tls_cacerts": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.bft/peers/peer1.org2.bft/tls/ca.crt"
         }
       }
     },
@@ -74,9 +74,15 @@
             "name": "member",
             "mspId": "org2MSP"
           }
+        },
+        {
+          "role": {
+            "name": "admin",
+            "mspId": "org1MSP"
+          }
         }
       ],
-      "policy": { "2-of": [{"signed-by": 1}, {"signed-by": 1}]}
+      "policy": { "2-of": [{"signed-by": 0}, {"signed-by": 1}]}
     },
     "context": {
       "open": "mychannel",
