@@ -1,0 +1,85 @@
+{
+    "network": {
+        "orderer": {
+            "url": "grpcs://orderer0.org0.deevo.com:7050",
+            "server-hostname": "orderer0.org0.deevo.com",
+            "tls_cacerts": "network/fabric/mynetwork/orderer/msp/tlscacerts/rca-org0-deevo-com-7054.pem",
+            "name": "org0",
+            "mspid": "org0MSP",
+            "ca": {
+                "url": "https://rca.org0.deevo.com:7054",
+                "name": "rca.org0.deevo.com"
+            }
+        },
+        "org1": {
+            "name": "org1",
+            "mspid": "org1MSP",
+            "ca": {
+                "url": "https://rca.org1.deevo.com:7054",
+                "name": "rca.org1.deevo.com"
+            },
+            "peer1": {
+                "requests": "grpcs://peer0.org1.deevo.com:7051",
+                "events": "grpcs://peer0.org1.deevo.com:7053",
+                "server-hostname": "peer0.org1.deevo.com",
+                "tls_cacerts": "network/fabric/mynetwork/peer0.org1.deevo.com/msp/tlscacerts/rca-org1-deevo-com-7054.pem"
+            }
+        },
+        "org2": {
+            "name": "org2",
+            "mspid": "org2MSP",
+            "ca": {
+                "url": "https://rca.org2.deevo.com:7054",
+                "name": "rca.org2.deevo.com"
+            },
+            "peer2": {
+                "requests": "grpcs://peer0.org2.deevo.com:7051",
+                "events": "grpcs://peer0.org2.deevo.com:7053",
+                "server-hostname": "peer0.org2.deevo.com",
+                "tls_cacerts": "network/fabric/mynetwork/peer0.org2.deevo.com/msp/tlscacerts/rca-org2-deevo-com-7054.pem"
+            }
+        },
+        "org3": {
+            "name": "org3",
+            "mspid": "org3MSP",
+            "ca": {
+                "url": "https://rca.org3.deevo.com:7054",
+                "name": "rca.org3.deevo.com"
+            },
+            "peer2": {
+                "requests": "grpcs://peer0.org3.deevo.com:7051",
+                "events": "grpcs://peer0.org3.deevo.com:7053",
+                "server-hostname": "peer0.org3.deevo.com",
+                "tls_cacerts": "network/fabric/mynetwork/peer0.org3.deevo.com/msp/tlscacerts/rca-org3-deevo-com-7054.pem"
+            }
+        },
+        "org4": {
+            "name": "org4",
+            "mspid": "org4MSP",
+            "ca": {
+                "url": "https://rca.org4.deevo.com:7054",
+                "name": "rca.org4.deevo.com"
+            },
+            "peer2": {
+                "requests": "grpcs://peer0.org4.deevo.com:7051",
+                "events": "grpcs://peer0.org4.deevo.com:7053",
+                "server-hostname": "peer0.org4.deevo.com",
+                "tls_cacerts": "network/fabric/mynetwork/peer0.org4.deevo.com/msp/tlscacerts/rca-org4-deevo-com-7054.pem"
+            }
+        },
+        "org5": {
+            "name": "org5",
+            "mspid": "org5MSP",
+            "ca": {
+                "url": "https://rca.org5.deevo.com:7054",
+                "name": "rca.org5.deevo.com"
+            },
+            "peer2": {
+                "requests": "grpcs://peer0.org5.deevo.com:7051",
+                "events": "grpcs://peer0.org5.deevo.com:7053",
+                "server-hostname": "peer0.org5.deevo.com",
+                "tls_cacerts": "network/fabric/mynetwork/peer0.org5.deevo.com/msp/tlscacerts/rca-org5-deevo-com-7054.pem"
+            }
+        }
+    }
+}

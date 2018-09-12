@@ -1,0 +1,43 @@
+2018/09/10 08:40:44 [INFO] Created default configuration file at /etc/hyperledger/fabric-ca/fabric-ca-server-config.yaml
+2018/09/10 08:40:44 [INFO] Server Version: 1.1.1
+2018/09/10 08:40:44 [INFO] Server Levels: &{Identity:1 Affiliation:1 Certificate:1}
+2018/09/10 08:40:44 [INFO] generating key: &{A:ecdsa S:256}
+2018/09/10 08:40:44 [INFO] encoded CSR
+2018/09/10 08:40:44 [INFO] signed certificate with serial number 116267861248822616083108327339918701787027548629
+2018/09/10 08:40:44 [INFO] The CA key and certificate were generated for CA 
+2018/09/10 08:40:44 [INFO] The key was stored by BCCSP provider 'SW'
+2018/09/10 08:40:44 [INFO] The certificate is at: /etc/hyperledger/fabric-ca/ca-cert.pem
+2018/09/10 08:40:50 [INFO] Initialized sqlite3 database at /etc/hyperledger/fabric-ca/fabric-ca-server.db
+2018/09/10 08:40:50 [INFO] Home directory for default CA: /etc/hyperledger/fabric-ca
+2018/09/10 08:40:50 [INFO] Initialization was successful
+2018/09/10 08:40:50 [INFO] Configuration file location: /etc/hyperledger/fabric-ca/fabric-ca-server-config.yaml
+2018/09/10 08:40:50 [INFO] Starting server in home directory: /etc/hyperledger/fabric-ca
+2018/09/10 08:40:50 [INFO] Server Version: 1.1.1
+2018/09/10 08:40:50 [INFO] Server Levels: &{Identity:1 Affiliation:1 Certificate:1}
+2018/09/10 08:40:50 [INFO] The CA key and certificate already exist
+2018/09/10 08:40:50 [INFO] The key is stored by BCCSP provider 'SW'
+2018/09/10 08:40:50 [INFO] The certificate is at: /etc/hyperledger/fabric-ca/ca-cert.pem
+2018/09/10 08:40:51 [INFO] Initialized sqlite3 database at /etc/hyperledger/fabric-ca/fabric-ca-server.db
+2018/09/10 08:40:51 [INFO] Home directory for default CA: /etc/hyperledger/fabric-ca
+2018/09/10 08:40:51 [INFO] generating key: &{A:ecdsa S:256}
+2018/09/10 08:40:51 [INFO] encoded CSR
+2018/09/10 08:40:51 [INFO] signed certificate with serial number 226382459538050799661712632946420377281863769150
+2018/09/10 08:40:51 [INFO] Listening on https://0.0.0.0:7054
+2018/09/10 08:40:52 http: TLS handshake error from 172.18.0.5:33840: EOF
+2018/09/10 08:40:52 [INFO] signed certificate with serial number 562617643394048461256205750194750540032111790414
+2018/09/10 08:40:53 [INFO] 172.18.0.5:33842 POST /enroll 201 0 "OK"
+2018/09/10 08:40:53 [INFO] 172.18.0.5:33844 POST /register 201 0 "OK"
+2018/09/10 08:40:53 [INFO] 172.18.0.5:33846 POST /register 201 0 "OK"
+2018/09/10 08:40:54 [INFO] 172.18.0.5:33850 POST /register 201 0 "OK"
+2018/09/10 08:40:54 [INFO] 172.18.0.5:33854 POST /register 201 0 "OK"
+2018/09/10 08:40:57 [INFO] 172.18.0.5:33874 POST /cainfo 200 0 "OK"
+2018/09/10 08:40:57 [INFO] signed certificate with serial number 422993563343741546510417542169341331153867263806
+2018/09/10 08:40:58 [INFO] 172.18.0.5:33876 POST /enroll 201 0 "OK"
+2018/09/10 08:41:10 [INFO] signed certificate with serial number 556171726366012159656157486171011628630745870467
+2018/09/10 08:41:10 [INFO] 172.18.0.11:33068 POST /enroll 201 0 "OK"
+2018/09/10 08:41:10 [INFO] signed certificate with serial number 62432011680013782017281644149902988550423049551
+2018/09/10 08:41:11 [INFO] 172.18.0.11:33072 POST /enroll 201 0 "OK"
+2018/09/10 08:41:11 [INFO] signed certificate with serial number 478494846172610231812197934792409755736988097326
+2018/09/10 08:41:11 [INFO] 172.18.0.11:33076 POST /enroll 201 0 "OK"
+2018/09/10 08:41:11 [INFO] signed certificate with serial number 516899632395746883887807867169136397058175531180
+2018/09/10 08:41:12 [INFO] 172.18.0.11:33086 POST /enroll 201 0 "OK"

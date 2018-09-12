@@ -1,0 +1,173 @@
+{
+  "fabric": {
+    "cryptodir": "network/fabric/mynetwork/crypto-config",
+    "network": {
+      "orderer": {
+        "url": "grpcs://orderer0.org0.deevo.com:7050",
+        "mspid": "org0MSP",
+        "domain": "org0.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/orderer/msp",
+        "server-hostname": "orderer0.org0.deevo.com",
+        "tls_cacerts": "network/fabric/mynetwork/orderer/msp/tlscacerts/rca-org0-deevo-com-7054.pem",
+         "user": {
+          "key": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.deevo.com/users/Admin@org0.deevo.com/msp/keystore/159f8893ce363731240c07ebf2a869d62ff9641c56929a6f9dcff9736c9f9019_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.deevo.com/users/Admin@org0.deevo.com/msp/signcerts/cert.pem"
+        },
+        "name": "org0"
+      },
+      "org1": {
+        "name": "org1",
+        "mspid": "org1MSP",
+        "domain": "org1.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/org1.deevo.com/msp/",
+        "user": {
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.deevo.com/users/Admin@org1.deevo.com/msp/keystore/6f1c6f19c9372d6168aef3e10fa556cd938aa89f222c9e25b50d5c64ca940b38_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.deevo.com/users/Admin@org1.deevo.com/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://rca.org1.deevo.com:7054",
+          "name": "rca.org1.deevo.com"
+        },
+        "peer1": {
+          "requests": "grpcs://peer0.org1.deevo.com:7051",
+          "events": "grpcs://peer0.org1.deevo.com:7053",
+          "server-hostname": "peer0.org1.deevo.com",
+          "tls_cacerts": "network/fabric/mynetwork/peer0.org1.deevo.com/msp/tlscacerts/rca-org1-deevo-com-7054.pem"
+        }
+      },
+      "org2": {
+        "name": "org2",
+        "mspid": "org2MSP",
+        "domain": "org2.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/org2.deevo.com/msp/",
+        "user": {
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.deevo.com/users/Admin@org2.deevo.com/msp/keystore/441cab1077a7d952363a4c3945bf030e35fff5a889bc1f30f53675fd1a8a4ccf_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.deevo.com/users/Admin@org2.deevo.com/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://rca.org2.deevo.com:7054",
+          "name": "rca.org2.deevo.com"
+        },
+        "peer1": {
+          "requests": "grpcs://peer0.org2.deevo.com:7051",
+          "events": "grpcs://peer0.org2.deevo.com:7053",
+          "server-hostname": "peer0.org2.deevo.com",
+          "tls_cacerts": "network/fabric/mynetwork/peer0.org2.deevo.com/msp/tlscacerts/rca-org2-deevo-com-7054.pem"
+        }
+    },
+    "org3": {
+        "name": "org3",
+        "mspid": "org3MSP",
+        "domain": "org3.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/org3.deevo.com/msp/",
+        "user": {
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org3.deevo.com/users/Admin@org3.deevo.com/msp/keystore/5d98b041008f7aa86bcb23e8e8832fb63c9125d0261fb2b7d75ab959a7785d7f_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org3.deevo.com/users/Admin@org3.deevo.com/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://rca.org3.deevo.com:7054",
+          "name": "rca.org3.deevo.com"
+        },
+        "peer1": {
+          "requests": "grpcs://peer0.org3.deevo.com:7051",
+          "events": "grpcs://peer0.org3.deevo.com:7053",
+          "server-hostname": "peer0.org3.deevo.com",
+          "tls_cacerts": "network/fabric/mynetwork/peer0.org3.deevo.com/msp/tlscacerts/rca-org3-deevo-com-7054.pem"
+        }
+    },
+    "org4": {
+        "name": "org4",
+        "mspid": "org4MSP",
+        "domain": "org4.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/org4.deevo.com/msp/",
+        "user": {
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org4.deevo.com/users/Admin@org4.deevo.com/msp/keystore/2cb323a4415fa86cf017a21f7d9613d6c1e3e298d727a270d99c7aa5e30226e6_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org4.deevo.com/users/Admin@org4.deevo.com/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://rca.org4.deevo.com:7054",
+          "name": "rca.org4.deevo.com"
+        },
+        "peer1": {
+          "requests": "grpcs://peer0.org4.deevo.com:7051",
+          "events": "grpcs://peer0.org4.deevo.com:7053",
+          "server-hostname": "peer0.org4.deevo.com",
+          "tls_cacerts": "network/fabric/mynetwork/peer0.org4.deevo.com/msp/tlscacerts/rca-org4-deevo-com-7054.pem"
+        }
+    },
+    "org5": {
+        "name": "org5",
+        "mspid": "org5MSP",
+        "domain": "org5.deevo.com",
+        "msp": "network/fabric/mynetwork/crypto-config/org5.deevo.com/msp/",
+        "user": {
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org5.deevo.com/users/Admin@org5.deevo.com/msp/keystore/75bd25c76d8b74da48fadbd33d5564889047367fbe870cca11c7759779b1aeca_sk",
+          "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org5.deevo.com/users/Admin@org5.deevo.com/msp/signcerts/cert.pem"
+        },
+        "ca": {
+          "url": "https://rca.org5.deevo.com:7054",
+          "name": "rca.org5.deevo.com"
+        },
+        "peer1": {
+          "requests": "grpcs://peer0.org5.deevo.com:7051",
+          "events": "grpcs://peer0.org5.deevo.com:7053",
+          "server-hostname": "peer0.org5.deevo.com",
+          "tls_cacerts": "network/fabric/mynetwork/peer0.org5.deevo.com/msp/tlscacerts/rca-org5-deevo-com-7054.pem"
+        }
+      }
+    },
+    "channel": [
+      {
+        "name": "mychannel8",
+        "config": "network/fabric/mynetwork/mychannel8.tx",
+        "organizations": ["org1", "org2", "org3", "org4", "org5"]
+      }
+    ],
+    "chaincodes": [{"id": "simple", "path": "contract/fabric/simple/go", "language":"golang", "version": "v4", "channel": "mychannel8"}],
+    "endorsement-policy": {
+      "identities": [
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org1MSP"
+          }
+        },
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org2MSP"
+          }
+        },
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org3MSP"
+          }
+        },
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org4MSP"
+          }
+        },
+        {
+          "role": {
+            "name": "member",
+            "mspId": "org5MSP"
+          }
+        }
+      ],
+      "policy": { "2-of": [{"signed-by": 0}, {"signed-by": 1}, {"signed-by": 2}, {"signed-by": 3}, {"signed-by": 4}]}
+    },
+    "context": {
+      "open": "mychannel8",
+      "query": "mychannel8"
+    }
+  },
+  "info" : {
+    "Version": "1.1.1",
+    "Size": "5 Peers",
+    "Orderer": "bftsmart",
+    "Distribution": "Single Host"
+  }
+}

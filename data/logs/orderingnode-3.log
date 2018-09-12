@@ -1,0 +1,254 @@
+/usr/lib/jvm/java-8-openjdk-amd64/
+Sep 10, 2018 8:41:00 AM org.hyperledger.fabric.sdk.helper.Config <init>
+WARNING: Failed to load any configuration from: config.properties. Using toolkit defaults
+Sep 10, 2018 8:41:00 AM bft.BFTNode <init>
+INFO: Starting up ordering node with system channel testchainid
+Sep 10, 2018 8:41:00 AM bft.BFTNode <init>
+INFO: This is the signature algorithm: SHA256withECDSA
+Sep 10, 2018 8:41:00 AM bft.BFTNode <init>
+INFO: This is the hash algorithm: SHA2
+-- Creating current view from configuration file
+java.net.ConnectException: Connection refused (Connection refused)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at java.net.Socket.connect(Socket.java:538)
+	at java.net.Socket.<init>(Socket.java:434)
+	at java.net.Socket.<init>(Socket.java:211)
+	at bftsmart.communication.server.ServerConnection.<init>(ServerConnection.java:98)
+	at bftsmart.communication.server.ServersCommunicationLayer.getConnection(ServersCommunicationLayer.java:140)
+	at bftsmart.communication.server.ServersCommunicationLayer.<init>(ServersCommunicationLayer.java:78)
+	at bftsmart.communication.ServerCommunicationSystem.<init>(ServerCommunicationSystem.java:63)
+	at bftsmart.tom.ServiceReplica.init(ServiceReplica.java:152)
+	at bftsmart.tom.ServiceReplica.<init>(ServiceReplica.java:140)
+	at bft.BFTNode.<init>(BFTNode.java:165)
+	at bft.BFTNode.main(BFTNode.java:252)
+java.net.ConnectException: Connection refused (Connection refused)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at java.net.Socket.connect(Socket.java:538)
+	at java.net.Socket.<init>(Socket.java:434)
+	at java.net.Socket.<init>(Socket.java:211)
+	at bftsmart.communication.server.ServerConnection.<init>(ServerConnection.java:98)
+	at bftsmart.communication.server.ServersCommunicationLayer.getConnection(ServersCommunicationLayer.java:140)
+	at bftsmart.communication.server.ServersCommunicationLayer.<init>(ServersCommunicationLayer.java:78)
+	at bftsmart.communication.ServerCommunicationSystem.<init>(ServerCommunicationSystem.java:63)
+	at bftsmart.tom.ServiceReplica.init(ServiceReplica.java:152)
+	at bftsmart.tom.ServiceReplica.<init>(ServiceReplica.java:140)
+	at bft.BFTNode.<init>(BFTNode.java:165)
+	at bft.BFTNode.main(BFTNode.java:252)
+java.net.ConnectException: Connection refused (Connection refused)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at java.net.Socket.connect(Socket.java:538)
+	at java.net.Socket.<init>(Socket.java:434)
+	at java.net.Socket.<init>(Socket.java:211)
+	at bftsmart.communication.server.ServerConnection.<init>(ServerConnection.java:98)
+	at bftsmart.communication.server.ServersCommunicationLayer.getConnection(ServersCommunicationLayer.java:140)
+	at bftsmart.communication.server.ServersCommunicationLayer.<init>(ServersCommunicationLayer.java:78)
+	at bftsmart.communication.ServerCommunicationSystem.<init>(ServerCommunicationSystem.java:63)
+	at bftsmart.tom.ServiceReplica.init(ServiceReplica.java:152)
+	at bftsmart.tom.ServiceReplica.<init>(ServiceReplica.java:140)
+	at bft.BFTNode.<init>(BFTNode.java:165)
+	at bft.BFTNode.main(BFTNode.java:252)
+-- ID = 3
+-- N = 4
+-- F = 1
+-- Port = 11000
+-- requestTimeout = 5000
+-- maxBatch = 400
+-- In current view: ID:0; F:1; Processes:0(bft.node.0/172.18.0.6:11000),1(bft.node.1/172.18.0.7:11000),2(bft.node.2/172.18.0.8:11000),3(bft.node.3/172.18.0.9:11000),
+Session Created, active clients=0
+-- Diffie-Hellman complete with 1
+-- Diffie-Hellman complete with 2
+-- Diffie-Hellman complete with 0
+-- Replica state is up to date
+-- Retrieving State
+-- Ready to process operations
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Session Created, active clients=0
+Sep 10, 2018 8:41:07 AM bft.BFTNode newChannel
+INFO: Creating channel testchainid
+Sep 10, 2018 8:41:08 AM bft.BlockCutter setBatchParms
+INFO: Updated PreferredMaxBytes: {testchainid=524288}
+Sep 10, 2018 8:41:08 AM bft.BlockCutter setBatchParms
+INFO: Updated MaxMessageCount: {testchainid=10}
+Sep 10, 2018 8:41:08 AM bft.BFTNode newChannel
+INFO: New channel ID: testchainid
+Sep 10, 2018 8:41:08 AM bft.BFTNode newChannel
+INFO: Genesis header number: 0
+Sep 10, 2018 8:41:08 AM bft.BFTNode newChannel
+INFO: Genesis header data hash: 51fb2f7056014627c355e42069db97c29d267cf31b05dfa3b109c818990bad4b
+Sep 10, 2018 8:41:09 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+-- Should I send the state? true
+--- CID requested: 1. Last checkpoint: -1. Last CID: 1
+--- Constructing ApplicationState up until CID 1
+true
+Sending state
+Sent
+Sep 10, 2018 8:41:11 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:13 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:15 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:17 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:19 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:21 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:23 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:25 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:27 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:29 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:31 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:33 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:35 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:37 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:39 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:41 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:43 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:45 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:47 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:49 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:51 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:53 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:55 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:57 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:41:59 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:01 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:03 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:05 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:07 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:09 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:12 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:14 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:16 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:18 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:20 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:22 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:24 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:26 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:28 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:30 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:32 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:34 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:36 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:38 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:40 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:42 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:44 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:46 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:48 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:50 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:52 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:54 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:56 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:42:58 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:00 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:02 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:04 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:06 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:08 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:10 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:12 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:14 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:16 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:18 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:20 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:22 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:24 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:26 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:28 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:30 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:32 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:34 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid
+Sep 10, 2018 8:43:36 AM bft.BFTNode executeSingle
+INFO: Purging blockcutter for channel testchainid

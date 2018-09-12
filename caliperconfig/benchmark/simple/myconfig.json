@@ -1,7 +1,7 @@
 {
   "blockchain": {
     "type": "fabric",
-    "config": "benchmark/simple/myfabric.json"
+    "config": "benchmark/simple/myfabric-remote.json"
   },
   "test": {
     "name": "simple",

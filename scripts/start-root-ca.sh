@@ -27,4 +27,4 @@ sed -i "s/OU: Fabric/OU: COP/g" \
 
 # Start the root CA
 fabric-ca-server version > /data/version-fabric-ca.txt
-fabric-ca-server start
+fabric-ca-server start --tls.enabled=true

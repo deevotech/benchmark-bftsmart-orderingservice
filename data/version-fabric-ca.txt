@@ -1,0 +1,4 @@
+fabric-ca-server:
+ Version: 1.1.1
+ Go version: go1.10
+ OS/Arch: linux/amd64

@@ -90,7 +90,7 @@
     }
   },
   "info" : {
-    "Version": "1.0.5",
+    "Version": "1.1.1",
     "Size": "2 Peers",
     "Orderer": "bftsmart",
     "Distribution": "Single Host"
