@@ -15,4 +15,7 @@
     - cp -R src/fabric caliper/src
 - Run benmark
     - npm test -- simple -c ./benchmark/simple/config.json -n ./benchmark/simple/myfabric-remote.json
- 
+- Run and on web
+   - config apache2 host point to caliper/src/gui/www
+   - Open http://<hostname>/index.html
+   - Choose fabric and simple, click run, to view benchmark
