@@ -57,7 +57,7 @@ module.exports.init = init;
 function installChaincode(org, chaincode) {
 
     const t = global.tapeObj;
-    Client.setConfigSetting('request-timeout', 200000);
+    Client.setConfigSetting('request-timeout', 60000);
     const channel_name = chaincode.channel;
 
     const client = new Client();
@@ -510,6 +510,7 @@ function getcontext(channelConfig) {
     const client = new Client();
     const channel = client.newChannel(channel_name);
     let orgName = ORGS[userOrg].name;
+    let org = orgName;
     const cryptoSuite = Client.newCryptoSuite();
     const eventhubs = [];
     cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: testUtil.storePathForOrg(orgName)}));
@@ -518,26 +519,33 @@ function getcontext(channelConfig) {
     const caRootsPath = ORGS.orderer.tls_cacerts;
     let data = fs.readFileSync(commUtils.resolvePath(caRootsPath));
     let caroots = Buffer.from(data).toString();
-
-    channel.addOrderer(
-        client.newOrderer(
-            ORGS.orderer.url,
-            {
-                'pem': caroots,
-                'ssl-target-name-override': ORGS.orderer['server-hostname']
-            }
-        )
-    );
+    let tlsInfo = null;
 
     orgName = ORGS[userOrg].name;
-    return Client.newDefaultKeyValueStore({path: testUtil.storePathForOrg(orgName)})
-        .then((store) => {
-            if (store) {
-                client.setStateStore(store);
-            }
-            return testUtil.getSubmitter(client, true, userOrg);
+    return e2eUtils.tlsEnroll(org)
+        .then((enrollment) => {
+            tlsInfo = enrollment;
+            return Client.newDefaultKeyValueStore({path: testUtil.storePathForOrg(orgName)});
+        }).then((store) => {
+            client.setStateStore(store);
+
+            return testUtil.getSubmitter(client, true, org);
         }).then((admin) => {
             the_user = admin;
+            channel.addOrderer(
+                client.newOrderer(
+                    ORGS.orderer.url,
+                    {
+                        'pem': caroots,
+                        'ssl-target-name-override': ORGS.orderer['server-hostname'],
+                        'clientCert': tlsInfo.certificate,
+                        'clientKey': tlsInfo.key,
+                        'grpc-max-send-message-length': 1024 * 1024 * 1024,
+                        'grpc.max_send_message_length': 1024 * 1024 * 1024,
+                        'grpc.max_receive_message_length': 1024 * 1024 * 1024
+                    }
+                )
+            );
 
             // set up the channel to use each org's random peer for
             // both requests and events
@@ -555,7 +563,12 @@ function getcontext(channelConfig) {
                     peerInfo.requests,
                     {
                         pem: Buffer.from(data).toString(),
-                        'ssl-target-name-override': peerInfo['server-hostname']
+                        'ssl-target-name-override': peerInfo['server-hostname'],
+                        'clientCert': tlsInfo.certificate,
+                        'clientKey': tlsInfo.key,
+                        'grpc-max-send-message-length': 1024 * 1024 * 1024,
+                        'grpc.max_send_message_length': 1024 * 1024 * 1024,
+                        'grpc.max_receive_message_length': 1024 * 1024 * 1024
                     }
                 );
                 channel.addPeer(peer);
@@ -568,6 +581,11 @@ function getcontext(channelConfig) {
                         {
                             pem: Buffer.from(data).toString(),
                             'ssl-target-name-override': peerInfo['server-hostname'],
+                            'clientCert': tlsInfo.certificate,
+                            'clientKey': tlsInfo.key,
+                            'grpc-max-send-message-length': 1024 * 1024 * 1024,
+                            'grpc.max_send_message_length': 1024 * 1024 * 1024,
+                            'grpc.max_receive_message_length': 1024 * 1024 * 1024,
                             //'request-timeout': 120000
                             'grpc.keepalive_timeout_ms' : 3000, // time to respond to the ping, 3 seconds
                             'grpc.keepalive_time_ms' : 360000   // time to wait for ping response, 6 minutes

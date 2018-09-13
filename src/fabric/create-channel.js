@@ -52,7 +52,7 @@ function run(config_path) {
     if(!channels || channels.length === 0) {
         return Promise.reject(new Error('No channel information found'));
     }
-    let channel_name = 'mychannel8';
+    let channel_name = channels[0].name;
     return new Promise(function(resolve, reject) {
         const t = global.tapeObj;
         let ORGS = fabric.network;
@@ -78,7 +78,7 @@ function run(config_path) {
                 t.comment(tlsInfo.key);
 
                 // use the config update created by the configtx tool
-                let envelope_bytes = fs.readFileSync(commUtils.resolvePath('network/fabric/mynetwork/mychannel8.tx'));
+                let envelope_bytes = fs.readFileSync(commUtils.resolvePath('network/fabric/mynetwork/' + channel_name + '.tx'));
                 config = client.extractChannelConfig(envelope_bytes);
                 t.comment(config);
                 t.pass('Successfull extracted the config update from the configtx envelope');

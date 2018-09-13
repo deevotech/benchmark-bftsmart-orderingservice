@@ -10,7 +10,7 @@
         "server-hostname": "orderer0.org0.deevo.com",
         "tls_cacerts": "network/fabric/mynetwork/orderer/msp/tlscacerts/rca-org0-deevo-com-7054.pem",
          "user": {
-          "key": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.deevo.com/users/Admin@org0.deevo.com/msp/keystore/159f8893ce363731240c07ebf2a869d62ff9641c56929a6f9dcff9736c9f9019_sk",
+          "key": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.deevo.com/users/Admin@org0.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/ordererOrganizations/org0.deevo.com/users/Admin@org0.deevo.com/msp/signcerts/cert.pem"
         },
         "name": "org0"
@@ -21,7 +21,7 @@
         "domain": "org1.deevo.com",
         "msp": "network/fabric/mynetwork/crypto-config/org1.deevo.com/msp/",
         "user": {
-          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.deevo.com/users/Admin@org1.deevo.com/msp/keystore/6f1c6f19c9372d6168aef3e10fa556cd938aa89f222c9e25b50d5c64ca940b38_sk",
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.deevo.com/users/Admin@org1.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org1.deevo.com/users/Admin@org1.deevo.com/msp/signcerts/cert.pem"
         },
         "ca": {
@@ -41,7 +41,7 @@
         "domain": "org2.deevo.com",
         "msp": "network/fabric/mynetwork/crypto-config/org2.deevo.com/msp/",
         "user": {
-          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.deevo.com/users/Admin@org2.deevo.com/msp/keystore/441cab1077a7d952363a4c3945bf030e35fff5a889bc1f30f53675fd1a8a4ccf_sk",
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.deevo.com/users/Admin@org2.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org2.deevo.com/users/Admin@org2.deevo.com/msp/signcerts/cert.pem"
         },
         "ca": {
@@ -61,7 +61,7 @@
         "domain": "org3.deevo.com",
         "msp": "network/fabric/mynetwork/crypto-config/org3.deevo.com/msp/",
         "user": {
-          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org3.deevo.com/users/Admin@org3.deevo.com/msp/keystore/5d98b041008f7aa86bcb23e8e8832fb63c9125d0261fb2b7d75ab959a7785d7f_sk",
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org3.deevo.com/users/Admin@org3.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org3.deevo.com/users/Admin@org3.deevo.com/msp/signcerts/cert.pem"
         },
         "ca": {
@@ -81,7 +81,7 @@
         "domain": "org4.deevo.com",
         "msp": "network/fabric/mynetwork/crypto-config/org4.deevo.com/msp/",
         "user": {
-          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org4.deevo.com/users/Admin@org4.deevo.com/msp/keystore/2cb323a4415fa86cf017a21f7d9613d6c1e3e298d727a270d99c7aa5e30226e6_sk",
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org4.deevo.com/users/Admin@org4.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org4.deevo.com/users/Admin@org4.deevo.com/msp/signcerts/cert.pem"
         },
         "ca": {
@@ -101,7 +101,7 @@
         "domain": "org5.deevo.com",
         "msp": "network/fabric/mynetwork/crypto-config/org5.deevo.com/msp/",
         "user": {
-          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org5.deevo.com/users/Admin@org5.deevo.com/msp/keystore/75bd25c76d8b74da48fadbd33d5564889047367fbe870cca11c7759779b1aeca_sk",
+          "key": "network/fabric/mynetwork/crypto-config/peerOrganizations/org5.deevo.com/users/Admin@org5.deevo.com/msp/keystore/key.pem",
           "cert": "network/fabric/mynetwork/crypto-config/peerOrganizations/org5.deevo.com/users/Admin@org5.deevo.com/msp/signcerts/cert.pem"
         },
         "ca": {
@@ -118,12 +118,12 @@
     },
     "channel": [
       {
-        "name": "mychannel8",
-        "config": "network/fabric/mynetwork/mychannel8.tx",
+        "name": "mychannel3",
+        "config": "network/fabric/mynetwork/mychannel3.tx",
         "organizations": ["org1", "org2", "org3", "org4", "org5"]
       }
     ],
-    "chaincodes": [{"id": "simple", "path": "contract/fabric/simple/go", "language":"golang", "version": "v4", "channel": "mychannel8"}],
+    "chaincodes": [{"id": "simple", "path": "contract/fabric/simple/go", "language":"golang", "version": "v1", "channel": "mychannel3"}],
     "endorsement-policy": {
       "identities": [
         {
@@ -160,8 +160,8 @@
       "policy": { "2-of": [{"signed-by": 0}, {"signed-by": 1}, {"signed-by": 2}, {"signed-by": 3}, {"signed-by": 4}]}
     },
     "context": {
-      "open": "mychannel8",
-      "query": "mychannel8"
+      "open": "mychannel3",
+      "query": "mychannel3"
     }
   },
   "info" : {
