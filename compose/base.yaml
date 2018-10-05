@@ -1,0 +1,135 @@
+# Contains the base template for all Hyperledger Fabric services
+# Never directly use services in this template, but inherent
+# All services are abstract without any names, config or port mapping
+# https://github.com/yeasy/docker-compose-files
+#
+# * ca-base: base for fabric-ca
+# * orderer-base: base for fabric-orderer
+# * peer-base: base for fabric-peer
+# * cli-base: base for fabric peer client
+
+
+version: '2' # compose v3 still doesn't support `extends`, shame!
+
+services:
+  ca-base:
+    image: bftsmart/bftsmart-fabric-ca
+    # restart: always
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true # change to false to disable TLS
+      - BOOTSTRAP_USER_PASS=rca-admin:rca-adminpw
+      - SERVER_TYPE=org
+    volumes:
+      - ../scripts-1.2:/scripts
+      - ../data:/data
+      - ../config-1.2:/config
+      - ../crypto-config:/crypto-config
+    command: /bin/bash -c '/scripts/start-ca.sh'
+
+  orderer-base:
+    image: bftsmart/bftsmart-orderer:1.2.0
+    # restart: always
+    # Default config can be found at https://github.com/hyperledger/fabric/blob/master/orderer/common/localconfig/config.go
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - ORDERER_GENERAL_LOGLEVEL=DEBUG  # default: INFO
+      - ORDERER_GENERAL_LOGFORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 # default: 127.0.0.1
+      - ORDERER_GENERAL_GENESISMETHOD=file # default: provisional
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP # default: DEFAULT
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/ca-client/msp
+      - ORDERER_GENERAL_LEDGERTYPE=file
+      #- ORDERER_GENERAL_LEDGERTYPE=json  # default: file
+      - ORDERER_GENERAL_BATCHTIMEOUT=1s
+      - ORDERER_GENERAL_MAXMESSAGECOUNT=10
+      - ORDERER_GENERAL_MAXWINDOWSIZE=1000
+      - ORDERER_GENERAL_LISTENPORT=7050
+      #- ORDERER_RAMLEDGER_HISTORY_SIZE=100  #only useful when use ram ledger
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true # default: false
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/ca-client/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/ca-client/tls/server.crt
+    volumes:
+      - ../scripts-1.2:/scripts
+      - ../config-1.2:/config
+      - ../data:/data
+      - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
+    expose:
+      - "7050" 
+    command: /bin/bash -c '/scripts/start-orderer.sh'
+
+  peer-base: # abstract base for fabric-peer, will be used in peer.yaml
+    image: bftsmart/bftsmart-peer:1.2.0
+    # restart: always
+    environment:
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - CORE_PEER_ADDRESSAUTODETECT=false
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false  # whether this node is the org leader, default to false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=0.0.0.0:7051  # external addr for peers in other orgs
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_bftsmart
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/ca-client/msp
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/server.key
+      - CORE_PEER_TLS_CLIENTCERT_FILE=/var/hyperledger/ca-client/tls/client.crt
+      - CORE_PEER_TLS_CLIENTKEY_FILE=/var/hyperledger/ca-client/tls/client.key
+      - PEER_CLI_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/cli-client.crt
+      - PEER_CLI_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/cli-client.key
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_CHAINCODE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
+    expose:
+      - "7051"  # Grpc
+      - "7052"  # Peer CLI
+      - "7053"  # Peer Event
+    volumes: # docker.sock is mapped as the default CORE_VM_ENDPOINT
+      - ../scripts-1.2:/scripts
+      - ../config-1.2:/config
+      - ../data:/data
+      - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
+      # - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
+      - /var/run/docker.sock:/var/run/docker.sock
+    #volumes:
+    #    - /var/run/:/host/var/run/
+    command: /bin/bash -c '/scripts/start-peer.sh'
+
+  bft-node-base:
+    image: bftsmart/bftsmart-orderingnode:1.2.0
+    container_name: bft.node
+    environment:
+      - GOPATH=/go
+      - NUMBER=0
+    volumes:
+      - ../scripts-1.2:/scripts
+      - ../data:/data
+      - ../config-1.2:/config
+      - ../data/channel-artifacts:/var/hyperledger/orderer
+    command: bash -c '/scripts/start-replica.sh'
+
+  cli-base:
+    image: bftsmart/bftsmart-fabric-tools
+    # restart: always
+    tty: true
+    environment:
+      - ARTIFACT_DIR=/etc/hyperledger/channel-artifacts
+      - GENESIS_BLOCK_FILE=/etc/hyperledger/channel-artifacts/genesis.block
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
+      - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/ca-client/msp
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/ca-client/tls/ca.crt
+    volumes:
+      - ../scripts-1.2:/scripts
+      - ../config-1.2:/config
+      - ../data/logs:/data/logs
+      - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
+      - ../crypto-config:/etc/hyperledger/fabric/crypto-config
+    command: bash -c '/scripts/run.sh'

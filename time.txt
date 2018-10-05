@@ -1,0 +1,8 @@
+ca: 20s
+msp (peer + orderer): 20s
+run (genesis): 20s
+start replica: 10s
+start frontend: 20s
+start orderer: 10s
+start peer: 20s
+channel artifacts: 20s
