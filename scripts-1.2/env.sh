@@ -22,21 +22,22 @@ function fatal() {
 }
 
 function genClientTLSCert() {
-	if [ $# -ne 3 ]; then
-		echo "Usage: genClientTLSCert <host name> <cert file> <key file>: $*"
+	if [ $# -ne 4 ]; then
+		echo "Usage: genClientTLSCert <host name> <org> <cert file> <key file>: $*"
 		exit 1
 	fi
 
 	HOST_NAME=$1
-	CERT_FILE=$2
-	KEY_FILE=$3
+	ORG=$2
+	CERT_FILE=$3
+	KEY_FILE=$4
 
 	logr "Enroll to get peer's TLS cert"
 
 	rm -rf /tmp/tls
 	mkdir -p /tmp/tls
 
-	fabric-ca-client enroll -d --enrollment.profile tls -u $ENROLLMENT_URL -M /tmp/tls --csr.hosts $HOST_NAME
+	fabric-ca-client enroll -d --enrollment.profile tls -u $ENROLLMENT_URL -M /tmp/tls --csr.hosts $HOST_NAME --csr.names C=US,ST="California",O=${ORG},OU: COP
 
 	cp /tmp/tls/signcerts/* $CERT_FILE
 	cp /tmp/tls/keystore/* $KEY_FILE

@@ -34,7 +34,7 @@ RUN mkdir -p $GOPATH/src/github.com/hyperledger \
 
 # Need libtool to provide the header file ltdl.h
 RUN apt-get update \
-        && apt-get install -y libtool unzip \
+        && apt-get install -y libtool libltdl-dev unzip \
         && rm -rf /var/cache/apt
 
 # clone and build ca

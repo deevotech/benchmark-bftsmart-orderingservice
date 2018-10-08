@@ -136,7 +136,9 @@ done
 logr "Creating channel '$CHANNEL_ID' on $ORDERER_HOST from ${PORGS[0]} ..."
 initPeerVars ${PORGS[0]} 1
 
-peer channel create --logging-level=DEBUG -c $CHANNEL_ID -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS --outputBlock $CHANNEL_BLOCK_FILE
+peer channel create --logging-level=DEBUG -c $CHANNEL_ID -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS --outputBlock $CHANNEL_BLOCK_FILE  2>&1 | tee -a /data/logs/create_channel.log &
+
+sleep 1
 
 logr "ALL peers join the channel"
 for ORG in $PEER_ORGS; do

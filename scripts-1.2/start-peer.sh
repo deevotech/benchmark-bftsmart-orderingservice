@@ -6,7 +6,7 @@ source $SDIR/env.sh
 
 function enrollCAAdmin() {
 	logr "Enrolling with $ENROLLMENT_URL as bootstrap identity ..."
-	fabric-ca-client enroll -d -u $ENROLLMENT_URL
+	fabric-ca-client enroll -d -u $ENROLLMENT_URL --csr.names C=US,ST="California",L="San Francisco",O=${ORG}
 }
 
 # Register any identities associated with a peer
@@ -50,13 +50,13 @@ function main() {
 	logr "Start create TLS"
 
 	logr "Generate server TLS cert and key pair for the peer"
-    genClientTLSCert $CORE_PEER_ID $CORE_PEER_TLS_CERT_FILE $CORE_PEER_TLS_KEY_FILE
+    genClientTLSCert $CORE_PEER_ID $ORG $CORE_PEER_TLS_CERT_FILE $CORE_PEER_TLS_KEY_FILE
 
 	logr "Generate client TLS cert and key pair for the peer"
-	genClientTLSCert $CORE_PEER_ID $CORE_PEER_TLS_CLIENTCERT_FILE $CORE_PEER_TLS_CLIENTKEY_FILE
+	genClientTLSCert $CORE_PEER_ID $ORG $CORE_PEER_TLS_CLIENTCERT_FILE $CORE_PEER_TLS_CLIENTKEY_FILE
 
 	logr "Generate client TLS cert and key pair for the peer CLI"
-	genClientTLSCert $CORE_PEER_ID $PEER_CLI_TLS_CERT_FILE $PEER_CLI_TLS_KEY_FILE
+	genClientTLSCert $CORE_PEER_ID $ORG $PEER_CLI_TLS_CERT_FILE $PEER_CLI_TLS_KEY_FILE
     logr "Copy the org's admin cert into some target MSP directory"
 
     mkdir -p $CORE_PEER_MSPCONFIGPATH/admincerts

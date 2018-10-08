@@ -48,7 +48,7 @@ function main() {
 	logr "Start create TLS"
 
 	logr "Enroll to get orderer's TLS cert (using the tls profile)"
-    genClientTLSCert $CORE_PEER_ID $ORDERER_GENERAL_TLS_CERTIFICATE $ORDERER_GENERAL_TLS_PRIVATEKEY
+    genClientTLSCert $CORE_PEER_ID $ORG $ORDERER_GENERAL_TLS_CERTIFICATE $ORDERER_GENERAL_TLS_PRIVATEKEY
 
 	logr "Enroll again to get the orderer's enrollment certificate (default profile)"
     fabric-ca-client enroll -d -u $ENROLLMENT_URL -M $ORDERER_GENERAL_LOCALMSPDIR

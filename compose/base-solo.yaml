@@ -16,25 +16,25 @@ networks:
   bftsmart:
 
 services:
-  rca.org0.bft: # ca node for org1
-    extends:
-      file: base.yaml
-      service: ca-base
-    container_name: rca.org0.bft
-    networks:
-      - bftsmart
-    environment:
-      - ORG=org0
-      - FABRIC_CA_SERVER_CA_NAME=rca.org0.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.org0.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.key
-      - SERVER_TYPE=orderer
-    ports:
-      - "7054:7054"
-    volumes:
-      - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
+  # rca.org0.bft: # ca node for org1
+  #   extends:
+  #     file: base.yaml
+  #     service: ca-base
+  #   container_name: rca.org0.bft
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org0
+  #     - FABRIC_CA_SERVER_CA_NAME=rca.org0.bft
+  #     - FABRIC_CA_SERVER_CSR_CN=rca.org0.bft
+  #     - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.bft
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
+  #     - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.key
+  #     - SERVER_TYPE=orderer
+  #   ports:
+  #     - "7054:7054"
+  #   volumes:
+  #     - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
 
   rca.org1.bft: # ca node for org1
     extends:
@@ -55,198 +55,201 @@ services:
     volumes:
       - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
 
-  rca.org2.bft: # ca node forbftsmart org2
+  # rca.org2.bft: # ca node forbftsmart org2
+  #   extends:
+  #     file: base.yaml
+  #     service: ca-base
+  #   container_name: rca.org2.bft
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org2
+  #     - FABRIC_CA_SERVER_CA_NAME=rca.org2.bft
+  #     - FABRIC_CA_SERVER_CSR_CN=rca.org2.bft
+  #     - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.bft
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+  #     - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.key
+  #   ports:
+  #     - "10054:7054"
+  #   volumes:
+  #     - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  # bft.node.0:
+  #   extends:
+  #     file: base.yaml
+  #     service: bft-node-base
+  #   container_name: bft.node.0
+  #   networks:
+  #     - bftsmart
+  #   ports:
+  #     - "11000:11000"
+  #   environment:
+  #     - NUMBER=0
+
+  # bft.node.1:
+  #   extends:
+  #     file: base.yaml
+  #     service: bft-node-base
+  #   container_name: bft.node.1
+  #   networks:
+  #     - bftsmart
+  #   ports:
+  #     - "11001:11000"
+  #   environment:
+  #     - NUMBER=1
+
+  # bft.node.2:
+  #   extends:
+  #     file: base.yaml
+  #     service: bft-node-base
+  #   container_name: bft.node.2
+  #   networks:
+  #     - bftsmart
+  #   ports:
+  #     - "11002:11000"
+  #   environment:
+  #     - NUMBER=2
+
+  # bft.node.3:
+  #   extends:
+  #     file: base.yaml
+  #     service: bft-node-base
+  #   container_name: bft.node.3
+  #   networks:
+  #     - bftsmart
+  #   ports:
+  #     - "11003:11000"
+  #   environment:
+  #     - NUMBER=3
+
+  # orderer1.org0.bft:  # orderer in solo mode
+  #   extends:
+  #     file: base.yaml
+  #     service: orderer-base
+  #   container_name: orderer1.org0.bft
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org0
+  #     - ORDERER_PASS=orderer1.org0.bftpw
+  #     - CORE_PEER_ID=orderer1.org0.bft
+  #     - ADMIN_NAME=admin-org0
+  #     - ADMIN_PASS=admin-org0pw
+  #     - ADMINCERTS=true
+  #     - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.bft:7054
+  #     - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+  #     - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
+  #     - ORG_MSP=/var/hyperledger/crypto/org/msp
+  #     - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem]
+  #   ports:
+  #     - "7050:7050"
+  #     # - 9999:9999
+  #   volumes:
+  #   - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
+  #   - ../crypto-config/orgs/org0/orderer1.org0.bft/msp:/var/hyperledger/ca-client/msp
+  #   - ../crypto-config/orgs/org0/orderer1.org0.bft/tls/:/var/hyperledger/ca-client/tls
+  #   - ../crypto-config/orgs/org0/orderer1.org0.bft:/var/hyperledger/ca-client
+  #   - ../crypto-config/orgs/org0/msp:/var/hyperledger/crypto/org/msp
+  #   - ../data/channel-artifacts:/var/hyperledger/orderer
+  #   depends_on:
+  #     - rca.org0.bft
+  #     - bft.node.0
+  #     - bft.node.1
+  #     - bft.node.2
+  #     - bft.node.3
+
+## following are peer nodes ##
+
+  peer1.org1.bft:
     extends:
       file: base.yaml
-      service: ca-base
-    container_name: rca.org2.bft
+      service: peer-base
+    container_name: peer1.org1.bft
     networks:
       - bftsmart
     environment:
-      - ORG=org2
-      - FABRIC_CA_SERVER_CA_NAME=rca.org2.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.org2.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.key
-    ports:
-      - "10054:7054"
+      - ORG=org1
+      - PEER_PASS=peer1.org1.bftpw
+      - ADMIN_NAME=admin-org1
+      - ADMIN_PASS=admin-org1pw
+      - USER_NAME=user-org1
+      - USER_PASS=user-org1pw
+      - ADMINCERTS=true
+      - CORE_PEER_ID=peer1.org1.bft
+      - CORE_PEER_ADDRESS=peer1.org1.bft:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.org1.bft:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.bft:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org1.bft:7054
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
+      - ORG_MSP=/var/hyperledger/crypto/org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
     volumes:
-      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+        - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
+        - ../crypto-config/orgs/org1/peer1.org1.bft/msp:/var/hyperledger/ca-client/msp
+        - ../crypto-config/orgs/org1/peer1.org1.bft/tls:/var/hyperledger/ca-client/tls
+        - ../crypto-config/orgs/org1/peer1.org1.bft:/var/hyperledger/ca-client
+        - ../crypto-config/orgs/org1/msp:/var/hyperledger/crypto/org/msp
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+      - "7053:7053"
+    depends_on:
+      - rca.org1.bft
+      # - orderer1.org0.bft
 
-#   bft.node.0:
-#     extends:
-#       file: base.yaml
-#       service: bft-node-base
-#     container_name: bft.node.0
-#     networks:
-#       - bftsmart
-#     ports:
-#       - "11000:11000"
-#     environment:
-#       - NUMBER=0
+  # peer1.org2.bft:
+  #   extends:
+  #     file: base.yaml
+  #     service: peer-base
+  #   container_name: peer1.org2.bft
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org2
+  #     - PEER_PASS=peer1.org2.bftpw
+  #     - ADMIN_NAME=admin-org2
+  #     - ADMIN_PASS=admin-org2pw
+  #     - USER_NAME=user-org2
+  #     - USER_PASS=user-org2pw
+  #     - ADMINCERTS=true
+  #     - CORE_PEER_ID=peer1.org2.bft
+  #     - CORE_PEER_ADDRESS=peer1.org2.bft:7051
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=peer1.org2.bft:7052
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.bft:7051
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.bft:7051
+  #     - CORE_PEER_LOCALMSPID=org2MSP
+  #     - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org2.bft:7054
+  #     - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+  #     - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+  #     - ORG_MSP=/var/hyperledger/crypto/org/msp
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+  #   volumes:
+  #       - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+  #       - ../crypto-config/orgs/org2/peer1.org2.bft/msp:/var/hyperledger/ca-client/msp
+  #       - ../crypto-config/orgs/org2/peer1.org2.bft/tls:/var/hyperledger/ca-client/tls
+  #       - ../crypto-config/orgs/org2/peer1.org2.bft:/var/hyperledger/ca-client
+  #       - ../crypto-config/orgs/org2/msp:/var/hyperledger/crypto/org/msp
+  #   ports:
+  #     - "9051:7051"
+  #     - "9052:7052"
+  #     - "9053:7053"
+  #   depends_on:
+  #     - rca.org2.bft
+  #     - orderer1.org0.bft
 
-#   bft.node.1:
-#     extends:
-#       file: base.yaml
-#       service: bft-node-base
-#     container_name: bft.node.1
-#     networks:
-#       - bftsmart
-#     ports:
-#       - "11001:11000"
-#     environment:
-#       - NUMBER=1
-
-#   bft.node.2:
-#     extends:
-#       file: base.yaml
-#       service: bft-node-base
-#     container_name: bft.node.2
-#     networks:
-#       - bftsmart
-#     ports:
-#       - "11002:11000"
-#     environment:
-#       - NUMBER=2
-
-#   bft.node.3:
-#     extends:
-#       file: base.yaml
-#       service: bft-node-base
-#     container_name: bft.node.3
-#     networks:
-#       - bftsmart
-#     ports:
-#       - "11003:11000"
-#     environment:
-#       - NUMBER=3
-
-#   orderer1.org0.bft:  # orderer in solo mode
-#     extends:
-#       file: base.yaml
-#       service: orderer-base
-#     container_name: orderer1.org0.bft
-#     networks:
-#       - bftsmart
-#     environment:
-#       - ORDERER_PASS=orderer1.org0.bftpw
-#       - CORE_PEER_ID=orderer1.org0.bft
-#       - ADMIN_NAME=admin-org0
-#       - ADMIN_PASS=admin-org0pw
-#       - ADMINCERTS=true
-#       - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.bft:7054
-#       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-#       - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
-#       - ORG_MSP=/var/hyperledger/crypto/org/msp
-#       - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem]
-#     ports:
-#       - "7050:7050"
-#       # - 9999:9999
-#     volumes:
-#     - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
-#     - ../crypto-config/orgs/org0/orderer1.org0.bft/msp:/var/hyperledger/ca-client/msp
-#     - ../crypto-config/orgs/org0/orderer1.org0.bft/tls/:/var/hyperledger/ca-client/tls
-#     - ../crypto-config/orgs/org0/orderer1.org0.bft:/var/hyperledger/ca-client
-#     - ../crypto-config/orgs/org0/msp:/var/hyperledger/crypto/org/msp
-#     - ../data/channel-artifacts:/var/hyperledger/orderer
-#     depends_on:
-#       - rca.org0.bft
-#       - bft.node.0
-#       - bft.node.1
-#       - bft.node.2
-#       - bft.node.3
-
-# # ## following are peer nodes ##
-
-#   peer1.org1.bft:
-#     extends:
-#       file: base.yaml
-#       service: peer-base
-#     container_name: peer1.org1.bft
-#     networks:
-#       - bftsmart
-#     environment:
-#       - PEER_PASS=peer1.org1.bftpw
-#       - ADMIN_NAME=admin-org1
-#       - ADMIN_PASS=admin-org1pw
-#       - USER_NAME=user-org1
-#       - USER_PASS=user-org1pw
-#       - ADMINCERTS=true
-#       - CORE_PEER_ID=peer1.org1.bft
-#       - CORE_PEER_ADDRESS=peer1.org1.bft:7051
-#       - CORE_PEER_CHAINCODELISTENADDRESS=peer1.org1.bft:7052
-#       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.bft:7051
-#       - CORE_PEER_LOCALMSPID=org1MSP
-#       - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org1.bft:7054
-#       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-#       - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
-#       - ORG_MSP=/var/hyperledger/crypto/org/msp
-#       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
-#     volumes:
-#         - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
-#         - ../crypto-config/orgs/org1/peer1.org1.bft/msp:/var/hyperledger/ca-client/msp
-#         - ../crypto-config/orgs/org1/peer1.org1.bft/tls:/var/hyperledger/ca-client/tls
-#         - ../crypto-config/orgs/org1/peer1.org1.bft:/var/hyperledger/ca-client
-#         - ../crypto-config/orgs/org1/msp:/var/hyperledger/crypto/org/msp
-#     ports:
-#       - "7051:7051"
-#       - "7052:7052"
-#       - "7053:7053"
-#     depends_on:
-#       - rca.org1.bft
-#       - orderer1.org0.bft
-
-#   peer1.org2.bft:
-#     extends:
-#       file: base.yaml
-#       service: peer-base
-#     container_name: peer1.org2.bft
-#     networks:
-#       - bftsmart
-#     environment:
-#       - PEER_PASS=peer1.org2.bftpw
-#       - ADMIN_NAME=admin-org2
-#       - ADMIN_PASS=admin-org2pw
-#       - USER_NAME=user-org2
-#       - USER_PASS=user-org2pw
-#       - ADMINCERTS=true
-#       - CORE_PEER_ID=peer1.org2.bft
-#       - CORE_PEER_ADDRESS=peer1.org2.bft:7051
-#       - CORE_PEER_CHAINCODELISTENADDRESS=peer1.org2.bft:7052
-#       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.bft:7051
-#       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.bft:7051
-#       - CORE_PEER_LOCALMSPID=org2MSP
-#       - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org2.bft:7054
-#       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-#       - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
-#       - ORG_MSP=/var/hyperledger/crypto/org/msp
-#       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
-#     volumes:
-#         - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
-#         - ../crypto-config/orgs/org2/peer1.org2.bft/msp:/var/hyperledger/ca-client/msp
-#         - ../crypto-config/orgs/org2/peer1.org2.bft/tls:/var/hyperledger/ca-client/tls
-#         - ../crypto-config/orgs/org2/peer1.org2.bft:/var/hyperledger/ca-client
-#         - ../crypto-config/orgs/org2/msp:/var/hyperledger/crypto/org/msp
-#     ports:
-#       - "9051:7051"
-#       - "9052:7052"
-#       - "9053:7053"
-#     depends_on:
-#       - rca.org2.bft
-#       - orderer1.org0.bft
-
-#   cli: # client node
-#     extends:
-#       file: base.yaml
-#       service: cli-base
-#     container_name: fabric-cli
-#     networks:
-#       - bftsmart
-#     environment:
-#       - CHANNEL_ID=mychannel
-#       - PEER_ORGS=org1 org2
-#     depends_on:
-#       - peer1.org1.bft
-#       - peer1.org2.bft
+  # cli: # client node
+  #   extends:
+  #     file: base.yaml
+  #     service: cli-base
+  #   container_name: fabric-cli
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - CHANNEL_ID=mychannel
+  #     - PEER_ORGS=org1 org2
+  #   depends_on:
+  #     - peer1.org1.bft
+  #     - peer1.org2.bft
 
