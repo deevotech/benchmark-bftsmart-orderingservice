@@ -12,6 +12,9 @@
 #
 
 function main {
+  mkdir -p /etc/hyperledger
+  mkdir -p /etc/hyperledger/fabric
+  export FABRIC_CFG_PATH=/etc/hyperledger/fabric
    log "Beginning building channel artifacts ..."
    registerIdentities
    getCACerts
@@ -390,13 +393,14 @@ function generateChannelArtifacts() {
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
  #cp /data/core.yaml $FABRIC_CFG_PATH/
-  configtxgen -profile SampleSingleMSPBFTsmart -outputBlock $GENESIS_BLOCK_FILE
+
+  export FABRIC_CFG_PATH=/etc/hyperledger/fabric && configtxgen -profile SampleSingleMSPBFTsmart -outputBlock $GENESIS_BLOCK_FILE
   if [ "$?" -ne 0 ]; then
     fatal "Failed to generate orderer genesis block"
   fi
 
   log "Generating channel configuration transaction at $CHANNEL_TX_FILE"
-  configtxgen -profile SampleSingleMSPChannel -outputCreateChannelTx $CHANNEL_TX_FILE -channelID $CHANNEL_NAME
+  export FABRIC_CFG_PATH=/etc/hyperledger/fabric && configtxgen -profile SampleSingleMSPChannel -outputCreateChannelTx $CHANNEL_TX_FILE -channelID $CHANNEL_NAME
   if [ "$?" -ne 0 ]; then
     fatal "Failed to generate channel configuration transaction"
   fi
@@ -404,7 +408,7 @@ function generateChannelArtifacts() {
   for ORG in $PEER_ORGS; do
      initOrgVars $ORG
      log "Generating anchor peer update transaction for $ORG at $ANCHOR_TX_FILE"
-     configtxgen -profile SampleSingleMSPChannel -outputAnchorPeersUpdate $ANCHOR_TX_FILE \
+     export FABRIC_CFG_PATH=/etc/hyperledger/fabric && configtxgen -profile SampleSingleMSPChannel -outputAnchorPeersUpdate $ANCHOR_TX_FILE \
                  -channelID $CHANNEL_NAME -asOrg $ORG
      if [ "$?" -ne 0 ]; then
         fatal "Failed to generate anchor peer update for $ORG"
@@ -457,14 +461,14 @@ TIME_WINDOW=15m
 
 #Calculate throughput measurements every THROUGHPUT_INTERVAL envelopes/blocks
 THROUGHPUT_INTERVAL=10000
-" > /data/node.config
-cat /data/orgs/org0/admin/msp/keystore/$KEYFILE > /data/key.pem
-cat /data/orgs/org0/admin/msp/signcerts/$SIGN_FILE > /data/peer.pem
+" > /$DATA/node.config
+cat /$DATA/orgs/org0/admin/msp/keystore/$KEYFILE > /$DATA/key.pem
+cat /$DATA/orgs/org0/admin/msp/signcerts/$SIGN_FILE > /$DATA/peer.pem
 
 }
 function copyConfigTxYaml() {
 echo $FABRIC_CFG_PATH > /data/path.txt
-cp /data/configtx.yaml /etc/hyperledger/fabric/
+cp /$DATA/configtx.yaml /etc/hyperledger/fabric/
 }
 
 set -e
