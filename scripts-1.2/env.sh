@@ -1,5 +1,7 @@
 #!/bin/bash
 
+FABRIC_ORGS="org0 org1 org2"
+
 # log a message
 function log() {
 	if [ "$1" = "-n" ]; then
@@ -21,25 +23,28 @@ function fatal() {
 	exit 1
 }
 
-function genClientTLSCert() {
-	if [ $# -ne 4 ]; then
-		echo "Usage: genClientTLSCert <host name> <org> <cert file> <key file>: $*"
+function genMSPCerts() {
+	if [ $# -ne 6 ]; then
+		echo "Usage: genMSPCerts <host name> <name> <password> <org> <ca host> <msp dir>: $*"
 		exit 1
 	fi
 
 	HOST_NAME=$1
-	ORG=$2
-	CERT_FILE=$3
-	KEY_FILE=$4
+	NAME=$2
+	PASSWORD=$3
+	ORG=$4
+	CA_HOST_NAME=$5
+	MSP_DIR=$6
 
 	logr "Enroll to get peer's TLS cert"
 
-	rm -rf /tmp/tls
-	mkdir -p /tmp/tls
+	mkdir -p $MSP_DIR
 
-	fabric-ca-client enroll -d --enrollment.profile tls -u $ENROLLMENT_URL -M /tmp/tls --csr.hosts $HOST_NAME --csr.names C=US,ST="California",O=${ORG},OU: COP
+	fabric-ca-client enroll -d --enrollment.profile tls -u https://$NAME:$PASSWORD@$CA_HOST_NAME:7054 -M $MSP_DIR --csr.hosts $HOST_NAME --csr.names C=US,ST="California",O=${ORG},OU=COP
 
-	cp /tmp/tls/signcerts/* $CERT_FILE
-	cp /tmp/tls/keystore/* $KEY_FILE
-	rm -rf /tmp/tls
+	# Copy CA certs
+	mkdir $MSP_DIR/tlscacerts
+	mkdir $MSP_DIR/cacerts
+    cp $ORG_MSP/cacerts/* $MSP_DIR/tlscacerts
+	cp $ORG_MSP/cacerts/* $MSP_DIR/cacerts
 }

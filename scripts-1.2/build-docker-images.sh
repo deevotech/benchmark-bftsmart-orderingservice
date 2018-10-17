@@ -5,4 +5,4 @@ docker build -t=bftsmart/bftsmart-fabric-tools -< ../docker-images-1.2/fabrictoo
 docker build -t=bftsmart/bftsmart-fabric-ca -< ../docker-images-1.2/fabricca.dockerfile
 docker build -t=bftsmart/bftsmart-orderer:1.2.0 -< ../docker-images-1.2/orderer.dockerfile
 docker build -t=bftsmart/bftsmart-peer:1.2.0 -< ../docker-images-1.2/peer.dockerfile
-docker build -t=bftsmart/bftsmart-couchdb -< ../docker-images-1.2/couchdb.dockerfile
+# docker build -t=bftsmart/bftsmart-couchdb -< ../docker-images-1.2/couchdb.dockerfile

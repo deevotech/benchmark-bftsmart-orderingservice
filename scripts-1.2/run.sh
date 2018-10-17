@@ -64,6 +64,8 @@ function initPeerVars() {
 	export CORE_PEER_ADDRESS=$PEER_HOST:7051
 	export CORE_PEER_LOCALMSPID=$ORG_MSP_ID
 	export CORE_PEER_MSPCONFIGPATH=$ROOT_CRYPTO_DIR/orgs/$ORG/$PEER_NAME/msp
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$ROOT_CRYPTO_DIR/orgs/$ORG/$PEER_NAME/tls/server.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$ROOT_CRYPTO_DIR/orgs/$ORG/$PEER_NAME/tls/server.key
 	# export CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
 	# the following setting starts chaincode containers on the same
 	# bridge network as the peers
@@ -76,10 +78,10 @@ function initPeerVars() {
 	export CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
 	export CORE_PEER_TLS_ROOTCERT_FILE=$CA_CHAINFILE
 
-	TLS_DIR=$ROOT_CRYPTO_DIR/orgs/$1/$PEER_NAME/tls
+	ADMIN_TLS_DIR=$ROOT_CRYPTO_DIR/orgs/$ORG/admin/tls
 
-	export CORE_PEER_TLS_CLIENTCERT_FILE=$TLS_DIR/cli-client.crt
-	export CORE_PEER_TLS_CLIENTKEY_FILE=$TLS_DIR/cli-client.key
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_TLS_DIR/client.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_TLS_DIR/client.key
 
 	export CORE_PEER_PROFILE_ENABLED=true
 	# gossip variables
@@ -105,7 +107,7 @@ CHAINCODE_NAME=mycc1
 
 logr "create genesis block"
 
-configtxgen -profile SampleSingleMSPBFTsmart -outputBlock $GENESIS_BLOCK_FILE
+configtxgen -profile SampleSingleMSPBFTsmart -outputBlock $GENESIS_BLOCK_FILE -channelID orderer-system-channel
 if [ "$?" -ne 0 ]; then
 	fatal "Failed to generate orderer genesis block"
 fi
@@ -120,6 +122,9 @@ configtxgen -profile SampleSingleMSPChannel -outputCreateChannelTx $CHANNEL_TX_F
 if [ "$?" -ne 0 ]; then
 	fatal "Failed to generate channel configuration transaction"
 fi
+
+configtxgen -inspectChannelCreateTx $CHANNEL_TX_FILE 2>&1 | tee -a /data/logs/create_channel.log &
+sleep 5
 
 for ORG in $PEER_ORGS; do
 	initOrgVars $ORG
@@ -136,9 +141,9 @@ done
 logr "Creating channel '$CHANNEL_ID' on $ORDERER_HOST from ${PORGS[0]} ..."
 initPeerVars ${PORGS[0]} 1
 
-peer channel create --logging-level=DEBUG -c $CHANNEL_ID -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS --outputBlock $CHANNEL_BLOCK_FILE  2>&1 | tee -a /data/logs/create_channel.log &
+peer channel create --logging-level=DEBUG -c $CHANNEL_ID -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS --outputBlock $CHANNEL_BLOCK_FILE 2>&1 | tee -a /data/logs/create_channel.log &
 
-sleep 1
+sleep 10
 
 logr "ALL peers join the channel"
 for ORG in $PEER_ORGS; do
@@ -176,26 +181,30 @@ for ORG in $PEER_ORGS; do
 done
 logr "Update the anchor peers: DONE"
 
-logr "install chaincode on peer1"
-for ORG in $PEER_ORGS; do
-	initPeerVars $ORG 1
+# initPeerVars org1 1
+# peer channel getinfo -c $CHANNEL_ID $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/channel.log &
+# sleep 1
 
-	logr "Install chaincode for $PEER_HOST ..."
-	peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go 2>&1 | tee -a /data/logs/${PEER_HOST}_install.log &
+# logr "install chaincode on peer1"
+# for ORG in $PEER_ORGS; do
+# 	initPeerVars $ORG 1
 
-	sleep 10
-done
+# 	logr "Install chaincode for $PEER_HOST ..."
+# 	peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go 2>&1 | tee -a /data/logs/${PEER_HOST}_install.log &
 
-logr "instantiate chaincode on ${PORGS[0]} peer1"
-initPeerVars ${PORGS[0]} 1
+# 	sleep 10
+# done
 
-POLICY="OR ('org1MSP.member', 'org2MSP.member')"
-peer chaincode instantiate -C $CHANNEL_ID -n ${CHAINCODE_NAME} -v 1.0 -P "$POLICY" -c '{"Args":["init","a","100","b","200"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/instantiate.log &
+# logr "instantiate chaincode on ${PORGS[0]} peer1"
+# initPeerVars ${PORGS[0]} 1
 
-sleep 10
+# POLICY="OR ('org1MSP.member', 'org2MSP.member')"
+# peer chaincode instantiate -C $CHANNEL_ID -n ${CHAINCODE_NAME} -v 1.0 -P "$POLICY" -c '{"Args":["init","a","100","b","200"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/instantiate.log &
 
-peer chaincode list --instantiated -C $CHANNEL_ID 2>&1 | tee -a /data/logs/${PEER_HOST}_installed.log &
-sleep 5
+# sleep 10
+
+# peer chaincode list --instantiated -C $CHANNEL_ID 2>&1 | tee -a /data/logs/${PEER_HOST}_installed.log &
+# sleep 5
 
 # logr "query chaincode"
 # logr "query a"

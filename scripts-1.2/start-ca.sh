@@ -18,6 +18,7 @@ fabric-ca-server init -b $BOOTSTRAP_USER_PASS
 for o in $FABRIC_ORGS; do
 	aff=$aff"\n   $o: []"
 done
+logr $aff
 perl -0777 -i.original -pe "s/affiliations:\n   org1:\n      - department1\n      - department2\n   org2:\n      - department1/affiliations:$aff/" $FABRIC_CA_SERVER_HOME/fabric-ca-server-config.yaml
 sed -i "s/ST: \"North Carolina\"/ST: \"California\"/g" \
 	$FABRIC_CA_SERVER_HOME/fabric-ca-server-config.yaml

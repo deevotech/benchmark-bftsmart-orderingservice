@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Only useful for this Dockerfile
 ENV FABRIC_ROOT=$GOPATH/src/github.com/hyperledger/fabric \
     FABRIC_CA_ROOT=$GOPATH/src/github.com/hyperledger/fabric-ca
-ENV CHAINTOOL_VERSION=1.1.1
+# ENV CHAINTOOL_VERSION=1.1.1
 
 # Architecture of the node
 ENV ARCH=amd64
@@ -57,8 +57,7 @@ ENV LD_FLAGS="-X github.com/hyperledger/fabric/common/metadata.Version=${PROJECT
               -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric \
               -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger \
               -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger \
-              -X github.com/hyperledger/fabric/common/metadata.Experimental=true \
-							-linkmode external -extldflags '-static -lpthread'"
+              -X github.com/hyperledger/fabric/common/metadata.Experimental=true"
 
 # peer envs. DONOT combine in one line as the former variable won't work on-the-fly
 ENV FABRIC_CFG_PATH=/etc/hyperledger/fabric
@@ -103,13 +102,13 @@ RUN apt-get update \
 
 # Install chaintool
 #RUN curl -L https://github.com/hyperledger/fabric-chaintool/releases/download/v0.10.3/chaintool > /usr/local/bin/chaintool \
-RUN curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-${CHAINTOOL_VERSION}/hyperledger-fabric-chaintool-${CHAINTOOL_VERSION}.jar > /usr/local/bin/chaintool \
-        && chmod a+x /usr/local/bin/chaintool
+# RUN curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-${CHAINTOOL_VERSION}/hyperledger-fabric-chaintool-${CHAINTOOL_VERSION}.jar > /usr/local/bin/chaintool \
+        # && chmod a+x /usr/local/bin/chaintool
 
 # install gotools
 RUN go get github.com/golang/protobuf/protoc-gen-go \
         && go get github.com/kardianos/govendor \
-        && go get github.com/golang/lint/golint \
+        && go get golang.org/x/lint/golint \
         && go get golang.org/x/tools/cmd/goimports \
         && go get github.com/onsi/ginkgo/ginkgo \
         && go get github.com/axw/gocov/... \
@@ -157,7 +156,7 @@ RUN cd $GOPATH/src/github.com/hyperledger \
     && rm release-1.2-deevo.zip \
     && mv fabric-ca-release-1.2-deevo fabric-ca \
     # This will install fabric-ca-server and fabric-ca-client into $GOPATH/bin/
-    && go install -ldflags "-X github.com/hyperledger/fabric-ca/lib/metadata.Version=$PROJECT_VERSION -linkmode external -extldflags '-static -lpthread'" github.com/hyperledger/fabric-ca/cmd/... \
+    && go install -ldflags "-X github.com/hyperledger/fabric-ca/lib/metadata.Version=$PROJECT_VERSION" github.com/hyperledger/fabric-ca/cmd/... \
     # Copy example ca and key files
     && cp $FABRIC_CA_ROOT/images/fabric-ca/payload/*.pem $FABRIC_CA_HOME/ \
     && go clean

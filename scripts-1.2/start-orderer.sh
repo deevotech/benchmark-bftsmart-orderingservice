@@ -14,11 +14,11 @@ function enrollCAAdmin() {
 function registerOrdererIdentities() {
 	enrollCAAdmin
 
-	fabric-ca-client register -d --id.name $CORE_PEER_ID --id.secret $ORDERER_PASS --id.type orderer
+	fabric-ca-client register -d --id.name $CORE_PEER_ID --id.secret $ORDERER_PASS --id.type orderer --id.affiliation $ORG
 
-	logr "Registering admin identity with $ENROLLMENT_URL"
+	logr "Registering admin identity with $ADMIN_NAME:$ADMIN_PASS"
 	# The admin identity has the "admin" attribute which is added to ECert by default
-	fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "admin=true:ecert"
+	fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "admin=true:ecert" --id.affiliation $ORG
 }
 
 function getCACerts() {
@@ -29,11 +29,9 @@ function getCACerts() {
 	mkdir -p $ORG_MSP/tlscacerts
 	cp $ORG_MSP/cacerts/* $ORG_MSP/tlscacerts
 
-	if [ $ADMINCERTS ]; then
-		# Copy certificate of org admin
-		mkdir -p $ORG_MSP/admincerts
-		cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $ORG_MSP/admincerts/cert.pem
-	fi
+	# Copy CA cert
+	mkdir -p $FABRIC_CA_CLIENT_HOME/msp/tlscacerts
+	cp $ORG_MSP/cacerts/* $FABRIC_CA_CLIENT_HOME/msp/tlscacerts
 }
 
 function main() {
@@ -47,19 +45,30 @@ function main() {
 	logr "Finished create certificates"
 	logr "Start create TLS"
 
-	logr "Enroll to get orderer's TLS cert (using the tls profile)"
-    genClientTLSCert $CORE_PEER_ID $ORG $ORDERER_GENERAL_TLS_CERTIFICATE $ORDERER_GENERAL_TLS_PRIVATEKEY
-
 	logr "Enroll again to get the orderer's enrollment certificate (default profile)"
-    fabric-ca-client enroll -d -u $ENROLLMENT_URL -M $ORDERER_GENERAL_LOCALMSPDIR
+	genMSPCerts $CORE_PEER_ID $CORE_PEER_ID $ORDERER_PASS $ORG $CA_HOST $ORDERER_CERT_DIR/msp
 
-    mkdir -p $ORDERER_GENERAL_LOCALMSPDIR/tlscacerts
-	cp $ORDERER_GENERAL_LOCALMSPDIR/cacerts/* $ORDERER_GENERAL_LOCALMSPDIR/tlscacerts
+	mkdir -p $ORDERER_CERT_DIR/tls
+	cp $ORDERER_CERT_DIR/msp/signcerts/* $ORDERER_GENERAL_TLS_CERTIFICATE
+	cp $ORDERER_CERT_DIR/msp/keystore/* $ORDERER_GENERAL_TLS_PRIVATEKEY
 
-    logr "Copy the org's admin cert into some target MSP directory"
+	if [ $ADMINCERTS ]; then
+		logr "Generate client TLS cert and key pair for the peer CLI"
+		genMSPCerts $CORE_PEER_ID $ADMIN_NAME $ADMIN_PASS $ORG $CA_HOST $ADMIN_CERT_DIR/msp
 
-    mkdir -p $ORDERER_GENERAL_LOCALMSPDIR/admincerts
-    cp $ORG_MSP/admincerts/* $ORDERER_GENERAL_LOCALMSPDIR/admincerts
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/client.crt
+		cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/client.key
+		mkdir -p $ADMIN_CERT_DIR/msp/admincerts
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/msp/admincerts/cert.pem
+		logr "Copy the org's admin cert into some target MSP directory"
+
+		mkdir -p $ORDERER_CERT_DIR/msp/admincerts
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORDERER_CERT_DIR/msp/admincerts/cert.pem
+
+		mkdir -p $ORG_MSP/admincerts
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP/admincerts/admin-cert.pem
+		cp $ORDERER_CERT_DIR/msp/signcerts/* $ORG_MSP/admincerts/orderer-cert.pem
+	fi
 
 	logr "Finished create TLS"
 
@@ -68,7 +77,7 @@ function main() {
 	logr "wait for genesis block and replicas"
 	sleep 50
 
-    logr "Start frontend"
+	logr "Start frontend"
 	cd $GOPATH/src/github.com/hyperledger/fabric-orderingservice
 	rm -rf config/currentView
 	cp /config/hosts.config config/hosts.config
@@ -79,7 +88,7 @@ function main() {
 	sleep 20
 
 	logr "Start orderer"
-	orderer start 2>&1 | tee -a $RUN_SUMPATH
+	orderer start 2>&1 | tee -a $RUN_SUMPATH 
 }
 
 main

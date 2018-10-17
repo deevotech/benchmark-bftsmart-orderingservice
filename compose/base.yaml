@@ -39,7 +39,7 @@ services:
       - ORDERER_GENERAL_GENESISMETHOD=file # default: provisional
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=org0MSP # default: DEFAULT
-      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/ca-client/msp
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/crypto/orderer/msp
       - ORDERER_GENERAL_LEDGERTYPE=file
       #- ORDERER_GENERAL_LEDGERTYPE=json  # default: file
       - ORDERER_GENERAL_BATCHTIMEOUT=1s
@@ -49,8 +49,10 @@ services:
       #- ORDERER_RAMLEDGER_HISTORY_SIZE=100  #only useful when use ram ledger
       # enabled TLS
       - ORDERER_GENERAL_TLS_ENABLED=true # default: false
-      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/ca-client/tls/server.key
-      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/ca-client/tls/server.crt
+      - ORDERER_CERT_DIR=/var/hyperledger/crypto/orderer
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/crypto/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/crypto/orderer/tls/server.crt
+      - ADMIN_CERT_DIR=/var/hyperledger/crypto/admin
     volumes:
       - ../scripts-1.2:/scripts
       - ../config-1.2:/config
@@ -64,6 +66,7 @@ services:
     image: bftsmart/bftsmart-peer:1.2.0
     # restart: always
     environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
       - CORE_PEER_ADDRESSAUTODETECT=false
       - CORE_LOGGING_LEVEL=DEBUG
@@ -74,13 +77,16 @@ services:
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_bftsmart
       - CORE_PEER_PROFILE_ENABLED=false
       - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/ca-client/msp
-      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/server.key
-      - CORE_PEER_TLS_CLIENTCERT_FILE=/var/hyperledger/ca-client/tls/client.crt
-      - CORE_PEER_TLS_CLIENTKEY_FILE=/var/hyperledger/ca-client/tls/client.key
-      - PEER_CLI_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/cli-client.crt
-      - PEER_CLI_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/cli-client.key
+      - PEER_CERT_DIR=/var/hyperledger/crypto/peer
+      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/crypto/peer/msp
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/crypto/peer/tls/server.key
+      - USER_CERT_DIR=/var/hyperledger/crypto/user
+      - CORE_PEER_TLS_CLIENTCERT_FILE=/var/hyperledger/crypto/user/tls/client.crt
+      - CORE_PEER_TLS_CLIENTKEY_FILE=/var/hyperledger/crypto/user/tls/client.key
+      - ADMIN_CERT_DIR=/var/hyperledger/crypto/admin
+      - PEER_CLI_TLS_CERT_FILE=/var/hyperledger/crypto/admin/tls/client.crt
+      - PEER_CLI_TLS_KEY_FILE=/var/hyperledger/crypto/admin/tls/client.key
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
       - CORE_CHAINCODE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
     expose:
@@ -93,7 +99,7 @@ services:
       - ../data:/data
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       # - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/:/host/var/run/
     #volumes:
     #    - /var/run/:/host/var/run/
     command: /bin/bash -c '/scripts/start-peer.sh'
@@ -122,14 +128,14 @@ services:
       - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
       - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/ca-client/msp
-      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/ca-client/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/ca-client/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/ca-client/tls/ca.crt
     volumes:
       - ../scripts-1.2:/scripts
       - ../config-1.2:/config
       - ../data/logs:/data/logs
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       - ../crypto-config:/etc/hyperledger/fabric/crypto-config
+      - ../crypto-config/orgs:/etc/hyperledger/fabric/crypto-config/orgs
+      - ../crypto-config/orgs/org0:/etc/hyperledger/fabric/crypto-config/orgs/org0
+      - ../crypto-config/orgs/org1:/etc/hyperledger/fabric/crypto-config/orgs/org1
+      - ../crypto-config/orgs/org2:/etc/hyperledger/fabric/crypto-config/orgs/org2
     command: bash -c '/scripts/run.sh'
