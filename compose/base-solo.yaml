@@ -168,7 +168,6 @@ services:
       - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org1/rca.org1.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org2/rca.org2.bft-cert.pem,/etc/hyperledger/fabric-ca-server-ordering/rca.ordering.bft-cert.pem]
     ports:
       - "7050:7050"
-      # - 9999:9999
     volumes:
       - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
       - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-org1

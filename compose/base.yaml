@@ -98,10 +98,7 @@ services:
       - ../config-1.2:/config
       - ../data:/data
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
-      # - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
       - /var/run/:/host/var/run/
-    #volumes:
-    #    - /var/run/:/host/var/run/
     command: /bin/bash -c '/scripts/start-peer.sh'
 
   bft-node-base:

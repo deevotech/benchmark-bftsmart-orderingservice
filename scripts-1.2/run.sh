@@ -123,7 +123,7 @@ if [ "$?" -ne 0 ]; then
 	fatal "Failed to generate channel configuration transaction"
 fi
 
-configtxgen -inspectChannelCreateTx $CHANNEL_TX_FILE 2>&1 | tee -a /data/logs/create_channel.log &
+configtxgen -inspectChannelCreateTx $CHANNEL_TX_FILE > /data/channel-config.json &
 sleep 5
 
 for ORG in $PEER_ORGS; do
@@ -181,42 +181,45 @@ for ORG in $PEER_ORGS; do
 done
 logr "Update the anchor peers: DONE"
 
-# initPeerVars org1 1
-# peer channel getinfo -c $CHANNEL_ID $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/channel.log &
-# sleep 1
+initPeerVars org1 1
+peer channel getinfo -c $CHANNEL_ID $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/channel.log &
+sleep 1
 
-# logr "install chaincode on peer1"
-# for ORG in $PEER_ORGS; do
-# 	initPeerVars $ORG 1
+logr "install chaincode on peer1"
+for ORG in $PEER_ORGS; do
+	initPeerVars $ORG 1
 
-# 	logr "Install chaincode for $PEER_HOST ..."
-# 	peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go 2>&1 | tee -a /data/logs/${PEER_HOST}_install.log &
+	logr "Install chaincode for $PEER_HOST ..."
+	peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go 2>&1 | tee -a /data/logs/${PEER_HOST}_install.log &
 
-# 	sleep 10
-# done
+	sleep 1
+done
 
-# logr "instantiate chaincode on ${PORGS[0]} peer1"
-# initPeerVars ${PORGS[0]} 1
+sleep 40
 
-# POLICY="OR ('org1MSP.member', 'org2MSP.member')"
-# peer chaincode instantiate -C $CHANNEL_ID -n ${CHAINCODE_NAME} -v 1.0 -P "$POLICY" -c '{"Args":["init","a","100","b","200"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/instantiate.log &
+logr "instantiate chaincode on ${PORGS[0]} peer1"
+POLICY="OR('org1MSP.member','org2MSP.member')"
+initPeerVars ${PORGS[0]} 1
 
-# sleep 10
+peer chaincode instantiate -C $CHANNEL_ID -n ${CHAINCODE_NAME} -v 1.0 -P ${POLICY} -c '{"Args":["init","a","100","b","200"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/instantiate.log &
 
-# peer chaincode list --instantiated -C $CHANNEL_ID 2>&1 | tee -a /data/logs/${PEER_HOST}_installed.log &
-# sleep 5
+sleep 20
 
-# logr "query chaincode"
-# logr "query a"
-# peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query1.log &
+peer chaincode list --instantiated -C $CHANNEL_ID 2>&1 | tee -a /data/logs/${PEER_HOST}_installed.log &
+sleep 10
 
-# sleep 10
+logr "query chaincode"
+logr "query a"
+peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query1.log &
 
-# logr "invoke a -> b"
-# peer chaincode invoke -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query2.log &
+sleep 10
 
-# sleep 10
-# logr "query a (2)"
-# peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query3.log &
+logr "invoke a -> b"
+peer chaincode invoke -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query2.log &
 
+sleep 10
+logr "query a (2)"
+peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query3.log &
+
+sleep 10
 logr "FINISHED"
