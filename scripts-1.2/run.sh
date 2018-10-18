@@ -214,12 +214,18 @@ peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a
 
 sleep 10
 
+initPeerVars ${PORGS[1]} 1
 logr "invoke a -> b"
 peer chaincode invoke -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query2.log &
 
 sleep 10
 logr "query a (2)"
 peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/query3.log &
+
+sleep 10
+
+logr "get newest block"
+peer channel fetch newest /etc/hyperledger/channel-artifacts/block.txt -c $CHANNEL_ID $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/getblock.log &
 
 sleep 10
 logr "FINISHED"
