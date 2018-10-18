@@ -15,5 +15,5 @@ services:
       - CHANNEL_ID=mychannel
       - PEER_ORGS=org1 org2
     volumes:
-      - ../data/logs:/data/logs_1
+      - ../data/logs:/data/logs_2
     command: bash -c '/scripts/run-marbles.sh'
