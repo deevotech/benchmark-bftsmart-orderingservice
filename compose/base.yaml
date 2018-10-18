@@ -110,11 +110,14 @@ services:
     environment:
       - GOPATH=/go
       - NUMBER=0
+      - NODE_COUNT=4
     volumes:
       - ../scripts-1.2:/scripts
       - ../data:/data
       - ../config-1.2:/config
       - ../data/channel-artifacts:/var/hyperledger/orderer
+      - ../crypto-config/orgs/ordering:/crypto-config
+      - ../crypto-config/orgs/org0/orderer1.org0.bft:/crypto-config-orderer
     command: bash -c '/scripts/start-replica.sh'
 
   cli-base:

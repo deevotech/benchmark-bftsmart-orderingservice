@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Only useful for this Dockerfile
 ENV FABRIC_ROOT=$GOPATH/src/github.com/hyperledger/fabric \
     FABRIC_CA_ROOT=$GOPATH/src/github.com/hyperledger/fabric-ca
-# ENV CHAINTOOL_VERSION=1.1.1
+ENV CHAINTOOL_VERSION=1.1.2
 
 # Architecture of the node
 ENV ARCH=amd64
@@ -102,8 +102,8 @@ RUN apt-get update \
 
 # Install chaintool
 #RUN curl -L https://github.com/hyperledger/fabric-chaintool/releases/download/v0.10.3/chaintool > /usr/local/bin/chaintool \
-# RUN curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-${CHAINTOOL_VERSION}/hyperledger-fabric-chaintool-${CHAINTOOL_VERSION}.jar > /usr/local/bin/chaintool \
-        # && chmod a+x /usr/local/bin/chaintool
+RUN curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-${CHAINTOOL_VERSION}/hyperledger-fabric-chaintool-${CHAINTOOL_VERSION}.jar > /usr/local/bin/chaintool \
+        && chmod a+x /usr/local/bin/chaintool
 
 # install gotools
 RUN go get github.com/golang/protobuf/protoc-gen-go \

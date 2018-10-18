@@ -16,7 +16,26 @@ networks:
   bftsmart:
 
 services:
-  rca.org0.bft: # ca node for org1
+  rca.ordering.bft: # ca node for ordering nodes
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.ordering.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=ordering-nodes
+      - FABRIC_CA_SERVER_CA_NAME=rca.ordering.bft
+      - FABRIC_CA_SERVER_CSR_CN=rca.ordering.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.ordering.bft
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.ordering.bft-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/rca.ordering.bft-cert.key
+    ports:
+      - "8054:7054"
+    volumes:
+      - ../crypto-config/orgs/ordering/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org0.bft: # ca node for org0
     extends:
       file: base.yaml
       service: ca-base
@@ -131,18 +150,22 @@ services:
       - bftsmart
     environment:
       - ORG=org0
+      - NODE_ORG=ordering-nodes
+      - NODE_COUNT=4
       - ORDERER_PASS=orderer1.org0.bftpw
       - CORE_PEER_ID=orderer1.org0.bft
       - ADMIN_NAME=admin-org0
       - ADMIN_PASS=admin-org0pw
+      - ORDERING_CA_HOST=rca.ordering.bft
       - CA_HOST=rca.org0.bft
       - ADMINCERTS=true
       - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.bft:7054
       - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
+      - ORDERING_CRYPTO_DIR=/var/hyperledger/crypto/ordering
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
       - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
       - ORG_MSP=/var/hyperledger/crypto/org/msp
-      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org1/rca.org1.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org2/rca.org2.bft-cert.pem]
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org1/rca.org1.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org2/rca.org2.bft-cert.pem,/etc/hyperledger/fabric-ca-server-ordering/rca.ordering.bft-cert.pem]
     ports:
       - "7050:7050"
       # - 9999:9999
@@ -150,6 +173,13 @@ services:
       - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
       - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-org1
       - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-org2
+      - ../crypto-config/orgs/ordering/ca/:/etc/hyperledger/fabric-ca-server-ordering
+
+      - ../crypto-config/orgs/ordering:/var/hyperledger/crypto/ordering
+      - ../crypto-config/orgs/ordering/msp:/var/hyperledger/crypto/ordering/msp
+      - ../crypto-config/orgs/ordering/msp/cacerts:/var/hyperledger/crypto/ordering/msp/cacerts
+      - ../crypto-config/orgs/ordering/msp/tlscacerts:/var/hyperledger/crypto/ordering/msp/tlscacerts
+      - ../crypto-config/orgs/ordering/msp/admincerts:/var/hyperledger/crypto/ordering/msp/admincerts
 
       - ../crypto-config/orgs/org0/msp:/var/hyperledger/crypto/org/msp
       - ../crypto-config/orgs/org0/msp/cacerts:/var/hyperledger/crypto/org/msp/cacerts
@@ -176,6 +206,7 @@ services:
       - ../data/channel-artifacts:/var/hyperledger/orderer
     depends_on:
       - rca.org0.bft
+      - rca.ordering.bft
       - bft.node.0
       - bft.node.1
       - bft.node.2

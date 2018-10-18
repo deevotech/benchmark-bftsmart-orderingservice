@@ -18,7 +18,7 @@ sudo rm -rf crypto-config/orgs/*
 for pid in $(docker ps -a -q); do
     if [ $pid != $$ ]; then
         echo "Container is already running $pid"
-        docker rm $pid
+        docker rm -f $pid
     fi
 done
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FABRIC_ORGS="org0 org1 org2"
+FABRIC_ORGS="ordering-nodes org0 org1 org2"
 
 # log a message
 function log() {

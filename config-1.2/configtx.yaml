@@ -49,6 +49,20 @@ Organizations:
                 Type: Signature
                 Rule: "OR('org0MSP.admin')"
 
+    - &ordering-nodes
+        Name: ordering-nodes
+        ID: ordering-nodesMSP
+        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/ordering/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ordering-nodesMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "AND('ordering-nodesMSP.member','ordering-nodesMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ordering-nodesMSP.admin')"
     - &org1
         Name: org1
         ID: org1MSP
@@ -390,6 +404,7 @@ Profiles:
             <<: *OrdererDefaults
             OrdererType: bftsmart
             Organizations:
+                - *ordering-nodes
                 - *org0
         Application:
             <<: *ApplicationDefaults
