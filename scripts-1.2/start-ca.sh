@@ -12,7 +12,6 @@ logr "Init CA server"
 
 fabric-ca-server init -b $BOOTSTRAP_USER_PASS
 # cp $FABRIC_CA_SERVER_HOME/ca-cert.pem $TARGET_CERTFILE
-# cp $FABRIC_CA_SERVER_HOME/ca-cert.pem $FABRIC_CA_SERVER_TLS_KEYFILE
 
 # Add the custom orgs
 for o in $FABRIC_ORGS; do
@@ -30,8 +29,8 @@ sed -i "s/O: Hyperledger/O: $ORG/g" \
 cp $FABRIC_CA_SERVER_HOME/fabric-ca-server-config.yaml /etc/hyperledger/fabric-ca-server-config/fabric-ca-server-config.yaml
 
 fabric-ca-server init -b $BOOTSTRAP_USER_PASS
-cp $FABRIC_CA_SERVER_HOME/ca-cert.pem $FABRIC_CA_SERVER_TLS_KEYFILE
+cp $FABRIC_CA_SERVER_HOME/ca-cert.pem $FABRIC_CA_SERVER_TLS_CERTFILE
 
 logr "Start CA server"
 
-fabric-ca-server start --ca.certfile $FABRIC_CA_SERVER_TLS_CERTFILE --ca.keyfile $FABRIC_CA_SERVER_TLS_KEYFILE -b $BOOTSTRAP_USER_PASS -d 2>&1 | tee -a  $RUN_SUMPATH
+fabric-ca-server start -b $BOOTSTRAP_USER_PASS -d 2>&1 | tee -a  $RUN_SUMPATH
