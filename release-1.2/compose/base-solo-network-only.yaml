@@ -16,83 +16,6 @@ networks:
   bftsmart:
 
 services:
-  rca.replicas.bft: # ca node for ordering nodes
-    extends:
-      file: base.yaml
-      service: ca-base
-    container_name: rca.replicas.bft
-    networks:
-      - bftsmart
-    environment:
-      - ORG=replicas
-      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.bft-cert.pem
-      # - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.bft-cert.pem
-    ports:
-      - "8054:7054"
-    volumes:
-      - ../crypto-config/orgs/replicas/ca/:/etc/hyperledger/fabric-ca-server-config
-
-  rca.org0.bft: # ca node for org0
-    extends:
-      file: base.yaml
-      service: ca-base
-    container_name: rca.org0.bft
-    networks:
-      - bftsmart
-    environment:
-      - ORG=org0
-      - FABRIC_CA_SERVER_CA_NAME=rca.org0.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.org0.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
-      # - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
-      - SERVER_TYPE=orderer
-    ports:
-      - "7054:7054"
-    volumes:
-      - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
-
-  rca.org1.bft: # ca node for org1
-    extends:
-      file: base.yaml
-      service: ca-base
-    container_name: rca.org1.bft
-    networks:
-      - bftsmart
-    environment:
-      - ORG=org1
-      - FABRIC_CA_SERVER_CA_NAME=rca.org1.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.org1.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org1.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
-      # - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
-    ports:
-      - "9054:7054"
-    volumes:
-      - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
-
-  rca.org2.bft: # ca node forbftsmart org2
-    extends:
-      file: base.yaml
-      service: ca-base
-    container_name: rca.org2.bft
-    networks:
-      - bftsmart
-    environment:
-      - ORG=org2
-      - FABRIC_CA_SERVER_CA_NAME=rca.org2.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.org2.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
-      # - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
-    ports:
-      - "10054:7054"
-    volumes:
-      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
-
   bft.node.0:
     extends:
       file: base.yaml
@@ -104,6 +27,7 @@ services:
       - "11000:11000"
     environment:
       - NUMBER=0
+    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.1:
     extends:
@@ -116,6 +40,7 @@ services:
       - "11001:11000"
     environment:
       - NUMBER=1
+    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.2:
     extends:
@@ -128,6 +53,7 @@ services:
       - "11002:11000"
     environment:
       - NUMBER=2
+    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.3:
     extends:
@@ -140,6 +66,7 @@ services:
       - "11003:11000"
     environment:
       - NUMBER=3
+    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   orderer0.org0.bft:  # orderer in solo mode
     extends:
@@ -208,12 +135,11 @@ services:
 
       - ../data/channel-artifacts:/var/hyperledger/orderer
     depends_on:
-      - rca.org0.bft
-      - rca.replicas.bft
       - bft.node.0
       - bft.node.1
       - bft.node.2
       - bft.node.3
+    command: /bin/bash -c '/scripts/start-orderer.sh -c 0'
 
 # ## following are peer nodes ##
 
@@ -286,8 +212,8 @@ services:
       - "7052:7052"
       - "7053:7053"
     depends_on:
-      - rca.org1.bft
       - orderer0.org0.bft
+    command: /bin/bash -c '/scripts/start-peer.sh -c 0'
 
   peer0.org2.bft:
     extends:
@@ -359,8 +285,8 @@ services:
       - "9052:7052"
       - "9053:7053"
     depends_on:
-      - rca.org2.bft
       - orderer0.org0.bft
+    command: /bin/bash -c '/scripts/start-peer.sh -c 0'
 
   cli: # client node
     extends:
@@ -375,4 +301,5 @@ services:
     depends_on:
       - peer0.org1.bft
       - peer0.org2.bft
+    command: bash -c '/scripts/run.sh -c 0'
 
