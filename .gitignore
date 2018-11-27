@@ -1,3 +1,10 @@
 #
-./data
-./setup
+release-1.1/data
+release-1.1/setup
+release-1.1/data-config
+release-1.1/crypto-config
+
+release-1.2/data
+release-1.2/setup
+release-1.2/data-config
+release-1.2/crypto-config

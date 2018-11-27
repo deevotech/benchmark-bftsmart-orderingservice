@@ -1,0 +1,19 @@
+version: '2'  # v3 does not support 'extends' yet
+
+networks:
+  bftsmart:
+
+services:
+  client-node: # client node
+    extends:
+      file: base.yaml
+      service: cli-base
+    container_name: client-node
+    networks:
+      - bftsmart
+    environment:
+      - CHANNEL_ID=mychannel
+      - PEER_ORGS=org1 org2
+    volumes:
+      - ../data/logs:/data/logs_2
+    command: bash -c '/scripts/run-marbles.sh'
