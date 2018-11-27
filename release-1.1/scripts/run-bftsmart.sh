@@ -10,7 +10,8 @@ set -e
 source $(dirname "$0")/env.sh
 
 function main {
-
+   export FABRIC_CFG_PATH=/${DATA}
+   cp /config/core-peer1.org1.bft.yaml /${DATA}/core.yaml
    done=false
 
    # Wait for setup to complete and then wait another 10 seconds for the orderer and peers to start

@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-tools:x86_64-1.1.1
+FROM ubuntu:16.04
 
 RUN apt-get update
 RUN apt-get install -y nano jq
@@ -31,12 +31,18 @@ RUN git checkout release-1.1
 WORKDIR /go/src/github.com/hyperledger/fabric/
 RUN pip install --upgrade pip
 RUN devenv/setupUbuntuOnPPC64le.sh
-#RUN make peer
-#RUN cp /go/src/github.com/hyperledger/fabric/build/bin/peer /usr/local/bin/peer
+WORKDIR /go/src/github.com/hyperledger/fabric/peer
+RUN go build
+RUN cp /go/src/github.com/hyperledger/fabric/peer/peer /usr/local/bin/peer
 
-WORKDIR /go/src/github.com/hyperledger/fabric/
+WORKDIR /go/src/github.com/hyperledger/fabric/common/tools/configtxgen
+RUN go build
+RUN cp /go/src/github.com/hyperledger/fabric/common/tools/configtxgen/configtxgen /usr/local/bin/configtxgen
 
-RUN make configtxgen configtxlator
+WORKDIR /go/src/github.com/hyperledger/fabric/common/tools/configtxlator
+RUN go build
+RUN cp /go/src/github.com/hyperledger/fabric/common/tools/configtxlator/configtxlator /usr/local/bin/configtxlator
+
 WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/broadcast_msg/
 RUN go build
 WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/broadcast_config/
@@ -44,8 +50,6 @@ RUN go build
 WORKDIR /go/src/github.com/hyperledger/fabric/orderer/sample_clients/deliver_stdout/
 RUN go build
 
-RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxgen /usr/local/bin/configtxgen
-RUN cp /go/src/github.com/hyperledger/fabric/build/bin/configtxlator /usr/local/bin/configtxlator
 WORKDIR /go/src/github.com/hyperledger/
 RUN git clone https://github.com/hyperledger/fabric-samples.git
 #RUN mkdir /hyperledgerconfig
