@@ -49,20 +49,20 @@ Organizations:
                 Type: Signature
                 Rule: "OR('org0MSP.admin')"
 
-    - &ordering-nodes
-        Name: ordering-nodes
-        ID: ordering-nodesMSP
-        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/ordering/msp
+    - &replicas
+        Name: replicas
+        ID: replicasMSP
+        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/replicas/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('ordering-nodesMSP.member')"
+                Rule: "OR('replicasMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "AND('ordering-nodesMSP.member','ordering-nodesMSP.member')"
+                Rule: "AND('replicasMSP.member','replicasMSP.member')"
             Admins:
                 Type: Signature
-                Rule: "OR('ordering-nodesMSP.admin')"
+                Rule: "OR('replicasMSP.admin')"
     - &org1
         Name: org1
         ID: org1MSP
@@ -81,7 +81,7 @@ Organizations:
         # cross-org gossip communication. Note, this value is only encoded in
         # the genesis block in the Application section context.
         AnchorPeers:
-            - Host: peer1.org1.bft
+            - Host: peer0.org1.bft
               Port: 7051
     - &org2
         Name: org2
@@ -98,7 +98,7 @@ Organizations:
                 Type: Signature
                 Rule: "OR('org2MSP.admin')"
         AnchorPeers:
-            - Host: peer1.org2.bft
+            - Host: peer0.org2.bft
               Port: 7051
 ################################################################################
 #
@@ -170,7 +170,7 @@ Orderer: &OrdererDefaults
     # participation in ordering.
     # NOTE: In the solo case, this should be a one-item list.
     Addresses:
-        - orderer1.org0.bft:7050
+        - orderer0.org0.bft:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
@@ -404,7 +404,7 @@ Profiles:
             <<: *OrdererDefaults
             OrdererType: bftsmart
             Organizations:
-                - *ordering-nodes
+                - *replicas
                 - *org0
         Application:
             <<: *ApplicationDefaults

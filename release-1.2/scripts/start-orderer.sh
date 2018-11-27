@@ -5,9 +5,29 @@ source $SDIR/env.sh
 export RUN_SUMPATH=/data/logs/orderer.log
 export RUN_FRONTEND=/data/logs/frontend.log
 
+# Wait for setup to complete sucessfully
+usage() { echo "Usage: $0 [-c <needs to generate certificates or not>]" 1>&2; exit 1; }
+while getopts ":c:" o; do
+    case "${o}" in
+        c)
+            c=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+if [ -z "${c}" ]; then
+    usage
+fi
+
 function enrollCAAdmin() {
+	mkdir -p $FABRIC_CA_CLIENT_HOME
+	rm -rf $FABRIC_CA_CLIENT_HOME/*
+
 	logr "Enrolling with $ENROLLMENT_URL as bootstrap identity ..."
-	fabric-ca-client enroll -d -u $ENROLLMENT_URL
+	fabric-ca-client enroll -d -u $ENROLLMENT_URL --enrollment.profile tls
 }
 
 # Register any identities associated with a peer
@@ -16,24 +36,31 @@ function registerOrdererIdentities() {
 
 	fabric-ca-client register -d --id.name $CORE_PEER_ID --id.secret $ORDERER_PASS --id.type orderer --id.affiliation $ORG
 
-	logr "Registering admin identity with $ADMIN_NAME:$ADMIN_PASS"
-	# The admin identity has the "admin" attribute which is added to ECert by default
-	fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "admin=true:ecert" --id.affiliation $ORG
+	if [ $ADMINCERTS ]; then
+		logr "Registering admin identity with $ADMIN_NAME:$ADMIN_PASS"
+		# The admin identity has the "admin" attribute which is added to ECert by default
+		fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "admin=true:ecert" --id.affiliation $ORG
+	fi
 }
 
 function registerNodesIdentities() {
 	FABRIC_CA_CLIENT_HOME=/var/hyperledger/ordering/ca-client
-	FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-ordering/rca.ordering.bft-cert.pem
+	FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-ordering/rca.replicas.bft-cert.pem
 
-	fabric-ca-client enroll -d -u https://rca-admin:rca-adminpw@$ORDERING_CA_HOST:7054
-	NODE_ORG_ADMIN=ordering-nodes-admin
-	NODE_ORG_ADMIN_PW=ordering-nodes-admin-pw
+	logr "Enrolling from $ORDERING_CA_HOST ..."
+	fabric-ca-client enroll -d -u https://rca-admin:rca-adminpw@$ORDERING_CA_HOST:7054 --enrollment.profile tls
+	NODE_ORG_ADMIN=replicas-admin
+	NODE_ORG_ADMIN_PW=replicas-admin-pw
 
 	ORDERING_ORG_MSP_DIR=$ORDERING_CRYPTO_DIR/msp
 	mkdir -p $ORDERING_ORG_MSP_DIR
+
 	fabric-ca-client getcacert -d -u https://rca-admin:rca-adminpw@$ORDERING_CA_HOST:7054 -M $ORDERING_ORG_MSP_DIR
-	mkdir -p $ORDERING_ORG_MSP_DIR/tlscacerts
-	cp $ORDERING_ORG_MSP_DIR/cacerts/* $ORDERING_ORG_MSP_DIR/tlscacerts
+
+	fabric-ca-client getcacert -d -u https://rca-admin:rca-adminpw@$ORDERING_CA_HOST:7054 -M $ORDERING_ORG_MSP_DIR --enrollment.profile tls
+
+	# cp $ORDERING_ORG_MSP_DIR/cacerts/* /etc/hyperledger/fabric-ca-server-ordering/rca.replicas.bft-cert.pem
+	cp $ORDERING_ORG_MSP_DIR/tlscacerts/* /etc/hyperledger/fabric-ca-server-ordering/tls.rca.replicas.bft-cert.pem
 
 	logr "Registering admin identity with $NODE_ORG_ADMIN:$NODE_ORG_ADMIN_PW"
 	# The admin identity has the "admin" attribute which is added to ECert by default
@@ -43,10 +70,13 @@ function registerNodesIdentities() {
 	ORDERING_ADMIN_TLS_DIR=$ORDERING_CRYPTO_DIR/admin/tls
 	mkdir -p $ORDERING_ADMIN_MSP_DIR
 	mkdir -p $ORDERING_ADMIN_TLS_DIR
-	genMSPCerts bft.node $NODE_ORG_ADMIN $NODE_ORG_ADMIN_PW $NODE_ORG $ORDERING_CA_HOST $ORDERING_ADMIN_MSP_DIR
+	genMSPCerts bft.node.admin $NODE_ORG_ADMIN $NODE_ORG_ADMIN_PW $NODE_ORG $ORDERING_CA_HOST $ORDERING_ADMIN_MSP_DIR
 
 	cp $ORDERING_ADMIN_MSP_DIR/signcerts/* $ORDERING_ADMIN_TLS_DIR/client.crt
 	cp $ORDERING_ADMIN_MSP_DIR/keystore/* $ORDERING_ADMIN_TLS_DIR/client.key
+
+	cp $ORDERING_ADMIN_MSP_DIR/signcerts/* $ORDERING_ORG_MSP_DIR/signcerts
+	cp $ORDERING_ADMIN_MSP_DIR/keystore/* $ORDERING_ORG_MSP_DIR/keystore
 
 	# Copy admin certs
 	mkdir -p $ORDERING_ADMIN_MSP_DIR/admincerts
@@ -81,15 +111,16 @@ function getCACerts() {
 	logr "Getting CA certs for organization $ORG and storing in $ORG_MSP"
 	mkdir -p $ORG_MSP
 	fabric-ca-client getcacert -d -u $ENROLLMENT_URL -M $ORG_MSP
-	mkdir -p $ORG_MSP/tlscacerts
-	cp $ORG_MSP/cacerts/* $ORG_MSP/tlscacerts
+
+	fabric-ca-client getcacert -d -u $ENROLLMENT_URL -M $ORG_MSP --enrollment.profile tls
 
 	# Copy CA cert
-	mkdir -p $FABRIC_CA_CLIENT_HOME/msp/tlscacerts
-	cp $ORG_MSP/cacerts/* $FABRIC_CA_CLIENT_HOME/msp/tlscacerts
+	# cp $ORG_MSP/cacerts/* $FABRIC_CA_CLIENT_HOME/msp/cacerts
+	# cp $ORG_MSP/cacerts/* /etc/hyperledger/fabric-ca-server-config/rca.$ORG.bft-cert.pem
+	cp $ORG_MSP/tlscacerts/* /etc/hyperledger/fabric-ca-server-config/tls.rca.$ORG.bft-cert.pem
 }
 
-function main() {
+function start-orderer-and-generate-tls() {
 	logr "wait for ca server"
 	sleep 20
 
@@ -102,17 +133,23 @@ function main() {
 
 	logr "Enroll again to get the orderer's enrollment certificate (default profile)"
 	genMSPCerts $CORE_PEER_ID $CORE_PEER_ID $ORDERER_PASS $ORG $CA_HOST $ORDERER_CERT_DIR/msp
+	cp $ORG_MSP/cacerts/* $ORDERER_CERT_DIR/msp/cacerts
+	cp $ORDERER_CERT_DIR/msp/signcerts/* $ORG_MSP/signcerts
+	cp $ORDERER_CERT_DIR/msp/keystore/* $ORG_MSP/keystore
 
 	mkdir -p $ORDERER_CERT_DIR/tls
 	cp $ORDERER_CERT_DIR/msp/signcerts/* $ORDERER_GENERAL_TLS_CERTIFICATE
 	cp $ORDERER_CERT_DIR/msp/keystore/* $ORDERER_GENERAL_TLS_PRIVATEKEY
 
 	if [ $ADMINCERTS ]; then
-		logr "Generate client TLS cert and key pair for the peer CLI"
+		logr "Generate client TLS cert and key pair for the admin of org"
 		genMSPCerts $CORE_PEER_ID $ADMIN_NAME $ADMIN_PASS $ORG $CA_HOST $ADMIN_CERT_DIR/msp
+		cp $ORG_MSP/cacerts/* $ADMIN_CERT_DIR/msp/cacerts
 
-		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/client.crt
-		cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/client.key
+		mkdir -p $ADMIN_CERT_DIR/tls
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/server.crt
+		cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/server.key
+		
 		mkdir -p $ADMIN_CERT_DIR/msp/admincerts
 		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/msp/admincerts/cert.pem
 		logr "Copy the org's admin cert into some target MSP directory"
@@ -127,9 +164,13 @@ function main() {
 
 	logr "Finished create TLS"
 
-	cp /config/orderer.yaml $FABRIC_CFG_PATH/orderer.yaml
-
 	registerNodesIdentities
+
+	start-orderer-only
+}
+
+function start-orderer-only() {
+	cp /config/orderer.yaml $FABRIC_CFG_PATH/orderer.yaml
 
 	logr "wait for genesis block and replicas"
 	sleep 50
@@ -163,4 +204,8 @@ function main() {
 	orderer start 2>&1 | tee -a $RUN_SUMPATH
 }
 
-main
+if [ $c -eq 1 ]; then
+	start-orderer-and-generate-tls
+else
+	start-orderer-only
+fi

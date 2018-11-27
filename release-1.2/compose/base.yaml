@@ -18,7 +18,8 @@ services:
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_TLS_ENABLED=true # change to false to disable TLS
-      - BOOTSTRAP_USER_PASS=rca-admin:rca-adminpw
+      - BOOTSTRAP_USER=rca-admin
+      - BOOTSTRAP_PASS=rca-adminpw
       - SERVER_TYPE=org
     volumes:
       - ../scripts:/scripts
@@ -60,7 +61,7 @@ services:
       - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
     expose:
       - "7050" 
-    command: /bin/bash -c '/scripts/start-orderer.sh'
+    command: /bin/bash -c '/scripts/start-orderer.sh -c 1'
 
   peer-base: # abstract base for fabric-peer, will be used in peer.yaml
     image: bftsmart/bftsmart-peer:1.2.0
@@ -99,7 +100,7 @@ services:
       - ../data:/data
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       - /var/run/:/host/var/run/
-    command: /bin/bash -c '/scripts/start-peer.sh'
+    command: /bin/bash -c '/scripts/start-peer.sh -c 1'
 
   bft-node-base:
     image: bftsmart/bftsmart-orderingnode:1.2.0
@@ -113,9 +114,9 @@ services:
       - ../data:/data
       - ../config:/config
       - ../data/channel-artifacts:/var/hyperledger/orderer
-      - ../crypto-config/orgs/ordering:/crypto-config
-      - ../crypto-config/orgs/org0/orderer1.org0.bft:/crypto-config-orderer
-    command: bash -c '/scripts/start-replica.sh'
+      - ../crypto-config/orgs/replicas:/crypto-config
+      - ../crypto-config/orgs/org0/orderer0.org0.bft:/crypto-config-orderer
+    command: bash -c '/scripts/start-replica.sh -c 1'
 
   cli-base:
     image: bftsmart/bftsmart-fabric-tools
@@ -138,4 +139,4 @@ services:
       - ../crypto-config/orgs/org0:/etc/hyperledger/fabric/crypto-config/orgs/org0
       - ../crypto-config/orgs/org1:/etc/hyperledger/fabric/crypto-config/orgs/org1
       - ../crypto-config/orgs/org2:/etc/hyperledger/fabric/crypto-config/orgs/org2
-    command: bash -c '/scripts/run.sh'
+    command: bash -c '/scripts/run.sh -c 1'

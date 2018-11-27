@@ -5,7 +5,7 @@ export RUN_SUMPATH=/data/logs_2/run-marbles.log
 
 export ROOT_CRYPTO_DIR=/etc/hyperledger/fabric/crypto-config
 export ORDERER_ORG=org0
-export ORDERER_HOST=orderer1.${ORDERER_ORG}.bft
+export ORDERER_HOST=orderer0.${ORDERER_ORG}.bft
 export ORDERER_TLS_CA=$ROOT_CRYPTO_DIR/orgs/${ORDERER_ORG}/ca/rca.${ORDERER_ORG}.bft-cert.pem
 export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
 NUM_PEERS=1
@@ -90,7 +90,7 @@ function initPeerVars() {
 	export CORE_PEER_GOSSIP_EXTERNALENDPOINT=$PEER_HOST:7051
 	# if [ $NUM -gt 1 ]; then
 	# 	# Point the non-anchor peers to the anchor peer, which is always the 1st peer
-	# 	export CORE_PEER_GOSSIP_BOOTSTRAP=peer1-${ORG}:7051
+	# 	export CORE_PEER_GOSSIP_BOOTSTRAP=peer0-${ORG}:7051
 	# fi
 	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
 }
@@ -101,7 +101,7 @@ GENESIS_BLOCK_FILE=$CHANNEL_ARTIFACTS_DIR/genesis.block
 CHAINCODE_NAME=marble-cc
 CHAINCODE_VERSION=1.0
 
-logr "install chaincode on peer1"
+logr "install chaincode on peer0"
 for ORG in $PEER_ORGS; do
 	initPeerVars $ORG 1
 
@@ -113,7 +113,7 @@ done
 
 sleep 30
 
-logr "instantiate chaincode on ${PORGS[0]} peer1"
+logr "instantiate chaincode on ${PORGS[0]} peer0"
 POLICY="OR('org1MSP.member','org2MSP.member')"
 initPeerVars ${PORGS[0]} 1
 
