@@ -21,9 +21,9 @@ services:
       - BOOTSTRAP_USER_PASS=rca-admin:rca-adminpw
       - SERVER_TYPE=org
     volumes:
-      - ../scripts-1.2:/scripts
+      - ../scripts:/scripts
       - ../data:/data
-      - ../config-1.2:/config
+      - ../config:/config
       - ../crypto-config:/crypto-config
     command: /bin/bash -c '/scripts/start-ca.sh'
 
@@ -54,8 +54,8 @@ services:
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/crypto/orderer/tls/server.crt
       - ADMIN_CERT_DIR=/var/hyperledger/crypto/admin
     volumes:
-      - ../scripts-1.2:/scripts
-      - ../config-1.2:/config
+      - ../scripts:/scripts
+      - ../config:/config
       - ../data:/data
       - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
     expose:
@@ -94,8 +94,8 @@ services:
       - "7052"  # Peer CLI
       - "7053"  # Peer Event
     volumes: # docker.sock is mapped as the default CORE_VM_ENDPOINT
-      - ../scripts-1.2:/scripts
-      - ../config-1.2:/config
+      - ../scripts:/scripts
+      - ../config:/config
       - ../data:/data
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       - /var/run/:/host/var/run/
@@ -109,9 +109,9 @@ services:
       - NUMBER=0
       - NODE_COUNT=4
     volumes:
-      - ../scripts-1.2:/scripts
+      - ../scripts:/scripts
       - ../data:/data
-      - ../config-1.2:/config
+      - ../config:/config
       - ../data/channel-artifacts:/var/hyperledger/orderer
       - ../crypto-config/orgs/ordering:/crypto-config
       - ../crypto-config/orgs/org0/orderer1.org0.bft:/crypto-config-orderer
@@ -129,8 +129,8 @@ services:
       - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
     volumes:
-      - ../scripts-1.2:/scripts
-      - ../config-1.2:/config
+      - ../scripts:/scripts
+      - ../config:/config
       - ../data/logs:/data/logs
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       - ../crypto-config:/etc/hyperledger/fabric/crypto-config

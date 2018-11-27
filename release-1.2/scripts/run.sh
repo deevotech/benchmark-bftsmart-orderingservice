@@ -96,7 +96,7 @@ function initPeerVars() {
 }
 
 logr "wait for peers"
-sleep 40
+sleep 38
 
 cp /config/configtx.yaml /etc/hyperledger/fabric/configtx.yaml
 CHANNEL_ARTIFACTS_DIR=/etc/hyperledger/channel-artifacts

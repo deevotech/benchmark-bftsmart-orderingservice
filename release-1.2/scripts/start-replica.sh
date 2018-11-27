@@ -5,7 +5,7 @@ source $SDIR/env.sh
 export RUN_SUMPATH=/data/logs/replica-${NUMBER}.log
 
 logr "wait for genesis block"
-sleep 60
+sleep 62
 
 cd $GOPATH/src/github.com/hyperledger/fabric-orderingservice
 rm -rf config/currentView
