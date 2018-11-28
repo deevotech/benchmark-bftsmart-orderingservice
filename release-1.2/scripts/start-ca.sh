@@ -159,7 +159,4 @@ fabric-ca-server init -b $BOOTSTRAP_USER_PASS
 # Start the root CA
 
 logr "Start CA server"
-fabric-ca-server start --ca.certfile $FABRIC_CA_SERVER_HOME/ca-cert.pem -b $BOOTSTRAP_USER_PASS -d 2>&1 | tee -a $RUN_SUMPATH
-
-# logr "Copy CA pem"
-# cp $FABRIC_CA_SERVER_HOME/ca-cert.pem $FABRIC_CA_SERVER_CA_CERTFILE
+fabric-ca-server start -b $BOOTSTRAP_USER_PASS -d 2>&1 | tee -a $RUN_SUMPATH
