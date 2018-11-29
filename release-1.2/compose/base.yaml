@@ -12,8 +12,29 @@
 version: '2' # compose v3 still doesn't support `extends`, shame!
 
 services:
+  config-base:
+    environment:
+      - PEER_ORGS=${PEER_ORGS}
+      - ORDERER_ORG=${ORDERER_ORG}
+      - REPLICAS_ORG=${REPLICAS_ORG}
+      - CRYPTO_DIR=${CLIENT_CRYPTO_DIR}
+      - NODE_COUNT=${NODE_COUNT}
+      - ARTIFACT_DIR=${ARTIFACT_DIR}
+      - CHANNEL_MSP_DIR=${CHANNEL_MSP_DIR}
+      - LOCAL_MSP_DIR=${LOCAL_MSP_DIR}
+    volumes:
+      - ${CRYPTO_DIR}:${CLIENT_CRYPTO_DIR}
+      - ${CRYPTO_DIR}/msp/channel:${CHANNEL_MSP_DIR}
+      - ${CRYPTO_DIR}/msp/local:${LOCAL_MSP_DIR}
+      - ../data/channel-artifacts:${ARTIFACT_DIR}
+      - ../scripts:/scripts
+      - ../data:/data
+      - ../config:/config
+
   ca-base:
     image: bftsmart/bftsmart-fabric-ca
+    extends:
+      service: config-base
     # restart: always
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -24,13 +45,13 @@ services:
     volumes:
       - ../scripts:/scripts
       - ../data:/data
-      - ../config:/config
-      - ../crypto-config:/crypto-config
     command: /bin/bash -c '/scripts/start-ca.sh'
 
   orderer-base:
     image: bftsmart/bftsmart-orderer:1.2.0
     # restart: always
+    extends:
+      service: config-base
     # Default config can be found at https://github.com/hyperledger/fabric/blob/master/orderer/common/localconfig/config.go
     environment:
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
@@ -58,7 +79,7 @@ services:
       - ../scripts:/scripts
       - ../config:/config
       - ../data:/data
-      - ../data-config/orderer:/go/src/github.com/hyperledger/fabric
+      - ../data/config/orderer:/go/src/github.com/hyperledger/fabric
     expose:
       - "7050" 
     command: /bin/bash -c '/scripts/start-orderer.sh -c 1'
@@ -66,6 +87,8 @@ services:
   peer-base: # abstract base for fabric-peer, will be used in peer.yaml
     image: bftsmart/bftsmart-peer:1.2.0
     # restart: always
+    extends:
+      service: config-base
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
@@ -104,6 +127,8 @@ services:
 
   bft-node-base:
     image: bftsmart/bftsmart-orderingnode:1.2.0
+    extends:
+      service: config-base
     container_name: bft.node
     environment:
       - GOPATH=/go
@@ -115,28 +140,30 @@ services:
       - ../config:/config
       - ../data/channel-artifacts:/var/hyperledger/orderer
       - ../crypto-config/orgs/replicas:/crypto-config
-      - ../crypto-config/orgs/org0/orderer0.org0.bft:/crypto-config-orderer
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io:/crypto-config-orderer
     command: bash -c '/scripts/start-replica.sh -c 1'
 
   cli-base:
     image: bftsmart/bftsmart-fabric-tools
     # restart: always
+    extends:
+      service: config-base
     tty: true
-    environment:
-      - ARTIFACT_DIR=/etc/hyperledger/channel-artifacts
-      - GENESIS_BLOCK_FILE=/etc/hyperledger/channel-artifacts/genesis.block
-      - CORE_LOGGING_LEVEL=DEBUG
-      - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
-      - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
-      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-    volumes:
-      - ../scripts:/scripts
-      - ../config:/config
-      - ../data/logs:/data/logs
-      - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
-      - ../crypto-config:/etc/hyperledger/fabric/crypto-config
-      - ../crypto-config/orgs:/etc/hyperledger/fabric/crypto-config/orgs
-      - ../crypto-config/orgs/org0:/etc/hyperledger/fabric/crypto-config/orgs/org0
-      - ../crypto-config/orgs/org1:/etc/hyperledger/fabric/crypto-config/orgs/org1
-      - ../crypto-config/orgs/org2:/etc/hyperledger/fabric/crypto-config/orgs/org2
+    # environment:
+    #   - ARTIFACT_DIR=${ARTIFACT_DIR}
+    #   - GENESIS_BLOCK_FILE=${GENESIS_BLOCK_FILE}
+      # - CORE_LOGGING_LEVEL=DEBUG
+      # - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
+      # - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
+      # - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+    # volumes:
+      # - ../scripts:/scripts
+      # - ../config:/config
+      # - ../data/logs:/data/logs
+      # - ../data/channel-artifacts:${ARTIFACT_DIR}
+      # - ../crypto-config:/etc/hyperledger/fabric/crypto-config
+      # - ../crypto-config/orgs:/etc/hyperledger/fabric/crypto-config/orgs
+      # - ../crypto-config/orgs/org0:/etc/hyperledger/fabric/crypto-config/orgs/org0
+      # - ../crypto-config/orgs/org1:/etc/hyperledger/fabric/crypto-config/orgs/org1
+      # - ../crypto-config/orgs/org2:/etc/hyperledger/fabric/crypto-config/orgs/org2
     command: bash -c '/scripts/run.sh -c 1'

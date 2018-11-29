@@ -1,9 +1,6 @@
 #!/bin/bash
 
-FABRIC_ORGS="replicas org0 org1 org2"
-ORDERER_ORG=org0
-ORDERER_HOST=orderer0.${ORDERER_ORG}.bft
-export ROOT_CRYPTO_DIR=/etc/hyperledger/fabric/crypto-config
+ORDERER_HOST=orderer0.${ORDERER_ORG}.deevo.io
 
 # initOrgVars <ORG>
 function initOrgVars() {
@@ -11,9 +8,9 @@ function initOrgVars() {
 		echo "Usage: initOrgVars <ORG>"
 		exit 1
 	fi
-	ORG=$1
-	ROOT_CA_HOST=rca.${ORG}.bft
-	ROOT_CA_NAME=rca.${ORG}.bft
+	local ORG=$1
+	ROOT_CA_HOST=rca.${ORG}.deevo.io
+	ROOT_CA_NAME=rca.${ORG}.deevo.io
 
 	# Admin identity for the org
 	ADMIN_NAME=admin-${ORG}
@@ -25,15 +22,13 @@ function initOrgVars() {
 	# Root CA admin identity
 	ROOT_CA_ADMIN_USER_PASS=rca-admin:rca-adminpw
 
-	export ROOT_CA_CERTFILE=$ROOT_CRYPTO_DIR/orgs/${ORG}/ca/rca.${ORG}.bft-cert.pem
-	export ROOT_TLS_CERTFILE=$ROOT_CRYPTO_DIR/orgs/${ORG}/ca/tls.rca.${ORG}.bft-cert.pem
-
-	mkdir -p $ARTIFACT_DIR/${ORG}
+	export ROOT_CA_CERTFILE=$CRYPTO_DIR/cacerts/${ORG}/rca.${ORG}.deevo.io-cert.pem
+	export ROOT_TLS_CERTFILE=$CRYPTO_DIR/cacerts/${ORG}/tls.rca.${ORG}.deevo.io-cert.pem
 
 	ANCHOR_TX_FILE=$ARTIFACT_DIR/${ORG}/anchors.tx
 	ORG_MSP_ID=${ORG}MSP
-	ORG_MSP_DIR=$ROOT_CRYPTO_DIR/orgs/${ORG}/msp
-	ORG_ADMIN_CERT=${ORG_MSP_DIR}/admincerts/cert.pem
+	ORG_MSP_DIR=$CHANNEL_MSP_DIR/${ORG}/msp
+	# ORG_ADMIN_CERT=${ORG_MSP_DIR}/admincerts/cert.pem
 	# ORG_ADMIN_HOME=${DATA}/orgs/$ORG/admin
 
 	export CA_NAME=$ROOT_CA_NAME
@@ -41,9 +36,10 @@ function initOrgVars() {
 	export CA_CHAINFILE=$ROOT_CA_CERTFILE
 	export CA_ADMIN_USER_PASS=$ROOT_CA_ADMIN_USER_PASS
 	export ENROLLMENT_URL=https://$ROOT_CA_ADMIN_USER_PASS@$ROOT_CA_HOST:7054
+	export FABRIC_CA_CLIENT_TLS_CERTFILES=$ROOT_CA_CERTFILE
+	export FABRIC_CA_CLIENT_HOME=$CRYPTO_DIR/orgs/$ORG/ca-client
 
-	export USER_CERT_DIR=$ROOT_CRYPTO_DIR/orgs/$ORG/user
-	export ADMIN_CERT_DIR=$ROOT_CRYPTO_DIR/orgs/$ORG/admin
+	export ADMIN_CERT_DIR=$LOCAL_MSP_DIR/$ORG/users/admin
 }
 
 # initPeerVars <ORG> <NUM>
@@ -56,14 +52,14 @@ function initPeerVars() {
 	NUM=$2
 
 	initOrgVars $1
-	export PEER_HOST=peer${NUM}.${ORG}.bft
-	export PEER_NAME=peer${NUM}.${ORG}.bft
+	export PEER_HOST=peer${NUM}.${ORG}.deevo.io
+	export PEER_NAME=peer${NUM}.${ORG}.deevo.io
 	export PEER_PASS=${PEER_NAME}pw
 
-	cp /config/core.yaml $FABRIC_CFG_PATH/core.yaml
+	cp -f /config/core.yaml $FABRIC_CFG_PATH/core.yaml
 
-	export PEER_CERT_DIR=$ROOT_CRYPTO_DIR/orgs/$ORG/$PEER_NAME
-	export FABRIC_CA_CLIENT_HOME=/etc/ca-client
+	export PEER_CERT_DIR=$LOCAL_MSP_DIR/$ORG/$PEER_NAME
+	# export FABRIC_CA_CLIENT_HOME=/etc/ca-client
 
 	export CORE_PEER_ID=$PEER_HOST
 	export CORE_PEER_ADDRESS=$PEER_HOST:7051
@@ -73,7 +69,6 @@ function initPeerVars() {
 	export CORE_PEER_TLS_ENABLED=true
 	export CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
 	export CORE_PEER_TLS_ROOTCERT_FILE=$CA_CHAINFILE
-	export FABRIC_CA_CLIENT_TLS_CERTFILES=$CA_CHAINFILE
 	export CORE_PEER_TLS_CLIENTROOTCAS_FILES=$CA_CHAINFILE
 	export PEER_GOSSIP_SKIPHANDSHAKE=true
 
@@ -81,9 +76,9 @@ function initPeerVars() {
 	export CORE_PEER_TLS_KEY_FILE=$PEER_TLS_DIR/server.key
 	export CORE_PEER_TLS_CERT_FILE=$PEER_TLS_DIR/server.crt
 
-	ADMIN_TLS_DIR=$ADMIN_CERT_DIR/tls
-	export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_TLS_DIR/client.crt
-	export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_TLS_DIR/client.key
+	# ADMIN_TLS_DIR=$ADMIN_CERT_DIR/tls
+	# export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_TLS_DIR/client.crt
+	# export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_TLS_DIR/client.key
 
 	export CORE_PEER_PROFILE_ENABLED=true
 	# gossip variables
@@ -92,23 +87,79 @@ function initPeerVars() {
 	export CORE_PEER_GOSSIP_EXTERNALENDPOINT=$PEER_HOST:7051
 	if [ $NUM -gt 0 ]; then
 		# Point the non-anchor peers to the anchor peer, which is always the 1st peer
-		export CORE_PEER_GOSSIP_BOOTSTRAP=peer0.${ORG}.bft:7051
+		export CORE_PEER_GOSSIP_BOOTSTRAP=peer0.${ORG}.deevo.io:7051
 		export CORE_PEER_ADDRESSAUTODETECT=true
 	fi
 
-	export ORDERER_TLS_CA=$ROOT_CRYPTO_DIR/orgs/${ORDERER_ORG}/ca/tls.rca.${ORDERER_ORG}.bft-cert.pem
+	export ORDERER_TLS_CA=$CRYPTO_DIR/orgs/${ORDERER_ORG}/cacerts/tls.rca.${ORDERER_ORG}.deevo.io-cert.pem
 	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
 
-	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_KEY_FILE --certfile $CORE_PEER_TLS_CERT_FILE"
+}
+
+# initOrdererVars <NUM>
+function initOrdererVars() {
+	if [ $# -ne 2 ]; then
+		echo "Usage: initOrdererVars <ORG> <NUM>"
+		exit 1
+	fi
+	initOrgVars $1
+	local ORG=$1
+	local NUM=$2
+
+	export ORDERER_HOST=orderer${NUM}.${ORG}.deevo.io
+	export ORDERER_NAME=orderer${NUM}.${ORG}.deevo.io
+	export ORDERER_PASS=${ORDERER_NAME}pw
+	export ORDERER_NAME_PASS=${ORDERER_NAME}:${ORDERER_PASS}
+
+	export ORDERER_CERT_DIR=$LOCAL_MSP_DIR/$ORG/$ORDERER_NAME
+
+	export ORDERER_GENERAL_LOGLEVEL=debug
+	export ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+	export ORDERER_GENERAL_GENESISMETHOD=file
+	export ORDERER_GENERAL_GENESISFILE=$GENESIS_BLOCK_FILE
+	export ORDERER_GENERAL_LOCALMSPID=$ORG_MSP_ID
+	export ORDERER_GENERAL_LOCALMSPDIR=$ORDERER_CERT_DIR/msp
+	# enabled TLS
+	export ORDERER_GENERAL_TLS_ENABLED=true
+	export TLSDIR=$ORDERER_CERT_DIR/tls
+	export ORDERER_GENERAL_TLS_PRIVATEKEY=$TLSDIR/server.key
+	export ORDERER_GENERAL_TLS_CERTIFICATE=$TLSDIR/server.crt
+	# export ORDERER_GENERAL_TLS_ROOTCAS=[$CA_CHAINFILE]
+	# export ORDERER_GENERAL_TLS_CLIENTROOTCAS=[$CA_CHAINFILE]
+	export ORDERER_HOME=/etc/hyperledger/orderer
+	export ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+	export ORDERER_FILELEDGER_LOCATION=/var/hyperledger/production/orderer
+
+	local ROOT_CAS="["
+	for o in ${ALL_ORGS[*]}; do
+		ROOT_CAS="${ROOT_CAS}${CRYPTO_DIR}/cacerts/rca.$o.deevo.io.pem,"
+	done
+	ROOT_CAS=${ROOT_CAS%?}
+	ROOT_CAS="$ROOT_CAS]"
+	export ORDERER_GENERAL_TLS_ROOTCAS=$ROOT_CAS
+}
+
+function cleanOrCreateDirectory() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: cleanOrCreateDirectory <path>: $*"
+		exit 1
+	fi
+
+	if [ ! -d $1 ]; then
+		mkdir -p $1
+	else
+		rm -rf $1/*
+	fi
 }
 
 # log a message
 function log() {
 	if [ "$1" = "-n" ]; then
 		shift
-		echo -n "##### $(date '+%Y-%m-%d %H:%M:%S') $*"
+		echo -ne "\e[91m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
 	else
-		echo "##### $(date '+%Y-%m-%d %H:%M:%S') $*"
+		echo -e "\e[91m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
 	fi
 }
 

@@ -1,0 +1,94 @@
+# All elements in this file should depend on the base.yaml
+# Provided solo-base fabric network with:
+
+version: '2'  # v3 does not support 'extends' yet
+
+networks:
+  bftsmart:
+
+services:
+  rca.replicas.deevo.io: # ca node for ordering nodes
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.replicas.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=replicas
+      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/replicas/tls.rca.replicas.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/replicas/rca.replicas.deevo.io-cert.pem
+    ports:
+      - "8054:7054"
+
+  rca.org0.deevo.io: # ca node for org0
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org0.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org0
+      - FABRIC_CA_SERVER_CA_NAME=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org0/tls.rca.org0.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org0/rca.org0.deevo.io-cert.pem
+      - SERVER_TYPE=orderer
+    ports:
+      - "9054:7054"
+
+  # rca.org1.deevo.io: # ca node for org1
+  #   extends:
+  #     file: base.yaml
+  #     service: ca-base
+  #   container_name: rca.org1.deevo.io
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org1
+  #     - FABRIC_CA_SERVER_CA_NAME=rca.org1.deevo.io
+  #     - FABRIC_CA_SERVER_CSR_CN=rca.org1.deevo.io
+  #     - FABRIC_CA_SERVER_CSR_HOSTS=rca.org1.deevo.io
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org1/tls.rca.org1.deevo.io-cert.pem
+  #     - FABRIC_CA_SERVER_CA_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org1/rca.org1.deevo.io-cert.pem
+  #   ports:
+  #     - "10054:7054"
+
+  # rca.org2.deevo.io: # ca node for org2
+  #   extends:
+  #     file: base.yaml
+  #     service: ca-base
+  #   container_name: rca.org2.deevo.io
+  #   networks:
+  #     - bftsmart
+  #   environment:
+  #     - ORG=org2
+  #     - FABRIC_CA_SERVER_CA_NAME=rca.org2.deevo.io
+  #     - FABRIC_CA_SERVER_CSR_CN=rca.org2.deevo.io
+  #     - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.deevo.io
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org2/tls.rca.org2.deevo.io-cert.pem
+  #     - FABRIC_CA_SERVER_CA_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/org2/rca.org2.deevo.io-cert.pem
+  #   ports:
+  #     - "11054:7054"
+
+  cli: # client node
+    extends:
+      file: base.yaml
+      service: cli-base
+    container_name: fabric-cli
+    networks:
+      - bftsmart
+    environment:
+      - CHANNEL_ID=${CHANNEL_ID}
+    depends_on:
+      - rca.org0.deevo.io
+      # - rca.org1.deevo.io
+      # - rca.org2.deevo.io
+      - rca.replicas.deevo.io
+    command: /bin/bash -c '/scripts/generate-msp.sh'
+

@@ -81,7 +81,7 @@ Organizations:
         # cross-org gossip communication. Note, this value is only encoded in
         # the genesis block in the Application section context.
         AnchorPeers:
-            - Host: peer0.org1.bft
+            - Host: peer0.org1.deevo.io
               Port: 7051
     - &org2
         Name: org2
@@ -98,7 +98,7 @@ Organizations:
                 Type: Signature
                 Rule: "OR('org2MSP.admin')"
         AnchorPeers:
-            - Host: peer0.org2.bft
+            - Host: peer0.org2.deevo.io
               Port: 7051
 ################################################################################
 #
@@ -170,7 +170,7 @@ Orderer: &OrdererDefaults
     # participation in ordering.
     # NOTE: In the solo case, this should be a one-item list.
     Addresses:
-        - orderer0.org0.bft:7050
+        - orderer0.org0.deevo.io:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
