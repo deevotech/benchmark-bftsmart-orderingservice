@@ -2,24 +2,32 @@
 
 set -e
 
-mkdir -p data
-mkdir -p data-config
-mkdir -p data/logs
-# mkdir -p setup
+mkdir -p data/channel-artifacts
 sudo rm -rf data/channel-artifacts/*
-sudo rm -rf data/logs/*
-sudo rm -rf data-config/*
-mkdir -p data
-# sudo rm -rf setup/*
-mkdir -p crypto-config/orgs
-sudo rm -rf crypto-config/orgs/*
+mkdir -p data/network
+sudo rm -rf data/network/*
+mkdir -p data/logs/network
+sudo rm -rf data/logs/network/*
+
+function removeDockerContainers() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: removeDockerContainers <image name>"
+		exit 1
+	fi
+	local imageName=$1
+
+	for pid in $(docker ps -a -q --filter ancestor=$imageName); do
+		if [ $pid != $$ ]; then
+			echo "Container of image $imageName is already running $pid"
+			docker rm -f $pid
+		fi
+	done
+}
 
 # Remove all containers
-for pid in $(docker ps -a -q); do
-    if [ $pid != $$ ]; then
-        echo "Container is already running $pid"
-        docker rm -f $pid
-    fi
-done
+removeDockerContainers "bftsmart/bftsmart-orderingnode:1.2.0"
+removeDockerContainers "bftsmart/bftsmart-peer:1.2.0"
+removeDockerContainers "bftsmart/bftsmart-orderer:1.2.0"
+removeDockerContainers "bftsmart/bftsmart-fabric-tools"
 
-export COMPOSE_PROJECT_NAME=net && docker-compose -f compose/base-solo.yaml up
+docker-compose -f compose/network-solo.yaml up

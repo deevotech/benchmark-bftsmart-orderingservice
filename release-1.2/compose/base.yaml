@@ -20,6 +20,7 @@ services:
       - CRYPTO_DIR=${CLIENT_CRYPTO_DIR}
       - NODE_COUNT=${NODE_COUNT}
       - ARTIFACT_DIR=${ARTIFACT_DIR}
+      - GENESIS_BLOCK_FILE=${GENESIS_BLOCK_FILE}
       - CHANNEL_MSP_DIR=${CHANNEL_MSP_DIR}
       - LOCAL_MSP_DIR=${LOCAL_MSP_DIR}
     volumes:
@@ -52,37 +53,9 @@ services:
     # restart: always
     extends:
       service: config-base
-    # Default config can be found at https://github.com/hyperledger/fabric/blob/master/orderer/common/localconfig/config.go
-    environment:
-      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - ORDERER_GENERAL_LOGLEVEL=DEBUG  # default: INFO
-      - ORDERER_GENERAL_LOGFORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
-      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 # default: 127.0.0.1
-      - ORDERER_GENERAL_GENESISMETHOD=file # default: provisional
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=org0MSP # default: DEFAULT
-      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/crypto/orderer/msp
-      - ORDERER_GENERAL_LEDGERTYPE=file
-      #- ORDERER_GENERAL_LEDGERTYPE=json  # default: file
-      - ORDERER_GENERAL_BATCHTIMEOUT=1s
-      - ORDERER_GENERAL_MAXMESSAGECOUNT=10
-      - ORDERER_GENERAL_MAXWINDOWSIZE=1000
-      - ORDERER_GENERAL_LISTENPORT=7050
-      #- ORDERER_RAMLEDGER_HISTORY_SIZE=100  #only useful when use ram ledger
-      # enabled TLS
-      - ORDERER_GENERAL_TLS_ENABLED=true # default: false
-      - ORDERER_CERT_DIR=/var/hyperledger/crypto/orderer
-      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/crypto/orderer/tls/server.key
-      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/crypto/orderer/tls/server.crt
-      - ADMIN_CERT_DIR=/var/hyperledger/crypto/admin
-    volumes:
-      - ../scripts:/scripts
-      - ../config:/config
-      - ../data:/data
-      - ../data/config/orderer:/go/src/github.com/hyperledger/fabric
     expose:
       - "7050" 
-    command: /bin/bash -c '/scripts/start-orderer.sh -c 1'
+    command: /bin/bash -c '/scripts/start-orderer.sh'
 
   peer-base: # abstract base for fabric-peer, will be used in peer.yaml
     image: bftsmart/bftsmart-peer:1.2.0
@@ -91,28 +64,7 @@ services:
       service: config-base
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - CORE_PEER_ADDRESSAUTODETECT=false
-      - CORE_LOGGING_LEVEL=DEBUG
-      - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false  # whether this node is the org leader, default to false
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=0.0.0.0:7051  # external addr for peers in other orgs
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_bftsmart
-      - CORE_PEER_PROFILE_ENABLED=false
-      - CORE_PEER_TLS_ENABLED=true
-      - PEER_CERT_DIR=/var/hyperledger/crypto/peer
-      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/crypto/peer/msp
-      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/crypto/peer/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/crypto/peer/tls/server.key
-      - USER_CERT_DIR=/var/hyperledger/crypto/user
-      - CORE_PEER_TLS_CLIENTCERT_FILE=/var/hyperledger/crypto/user/tls/client.crt
-      - CORE_PEER_TLS_CLIENTKEY_FILE=/var/hyperledger/crypto/user/tls/client.key
-      - ADMIN_CERT_DIR=/var/hyperledger/crypto/admin
-      - PEER_CLI_TLS_CERT_FILE=/var/hyperledger/crypto/admin/tls/client.crt
-      - PEER_CLI_TLS_KEY_FILE=/var/hyperledger/crypto/admin/tls/client.key
-      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
-      - CORE_CHAINCODE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
     expose:
       - "7051"  # Grpc
       - "7052"  # Peer CLI
@@ -123,7 +75,7 @@ services:
       - ../data:/data
       - ../data/channel-artifacts:/etc/hyperledger/channel-artifacts
       - /var/run/:/host/var/run/
-    command: /bin/bash -c '/scripts/start-peer.sh -c 1'
+    command: /bin/bash -c '/scripts/start-peer.sh'
 
   bft-node-base:
     image: bftsmart/bftsmart-orderingnode:1.2.0
@@ -131,17 +83,8 @@ services:
       service: config-base
     container_name: bft.node
     environment:
-      - GOPATH=/go
-      - NUMBER=0
-      - NODE_COUNT=4
-    volumes:
-      - ../scripts:/scripts
-      - ../data:/data
-      - ../config:/config
-      - ../data/channel-artifacts:/var/hyperledger/orderer
-      - ../crypto-config/orgs/replicas:/crypto-config
-      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io:/crypto-config-orderer
-    command: bash -c '/scripts/start-replica.sh -c 1'
+      - GOPATH=/opt/gopath
+    command: bash -c '/scripts/start-replica.sh'
 
   cli-base:
     image: bftsmart/bftsmart-fabric-tools
@@ -149,21 +92,4 @@ services:
     extends:
       service: config-base
     tty: true
-    # environment:
-    #   - ARTIFACT_DIR=${ARTIFACT_DIR}
-    #   - GENESIS_BLOCK_FILE=${GENESIS_BLOCK_FILE}
-      # - CORE_LOGGING_LEVEL=DEBUG
-      # - CORE_LOGGING_FORMAT=%{color}[%{id:03x} %{time:01-02 15:04:05.00 MST}] [%{longpkg}] %{callpath} -> %{level:.4s}%{color:reset} %{message}
-      # - CORE_PEER_TLS_ENABLED=true  # to enable TLS, change to true
-      # - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-    # volumes:
-      # - ../scripts:/scripts
-      # - ../config:/config
-      # - ../data/logs:/data/logs
-      # - ../data/channel-artifacts:${ARTIFACT_DIR}
-      # - ../crypto-config:/etc/hyperledger/fabric/crypto-config
-      # - ../crypto-config/orgs:/etc/hyperledger/fabric/crypto-config/orgs
-      # - ../crypto-config/orgs/org0:/etc/hyperledger/fabric/crypto-config/orgs/org0
-      # - ../crypto-config/orgs/org1:/etc/hyperledger/fabric/crypto-config/orgs/org1
-      # - ../crypto-config/orgs/org2:/etc/hyperledger/fabric/crypto-config/orgs/org2
-    command: bash -c '/scripts/run.sh -c 1'
+

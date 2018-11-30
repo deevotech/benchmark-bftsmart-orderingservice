@@ -1,7 +1,7 @@
 # All elements in this file should depend on the base.yaml
 # Provided solo-base fabric network with:
 
-# rca.org0.bft
+# rca.org0.deevo.io
 # ca.org2.example.com
 # orderer.example.com
 # peer0.org1.example.com
@@ -16,20 +16,20 @@ networks:
   bftsmart:
 
 services:
-  rca.replicas.bft: # ca node for ordering nodes
+  rca.replicas.deevo.io: # ca node for ordering nodes
     extends:
       file: base.yaml
       service: ca-base
-    container_name: rca.replicas.bft
+    container_name: rca.replicas.deevo.io
     networks:
       - bftsmart
     environment:
       - ORG=replicas
-      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.bft
-      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.bft
-      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.bft
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.replicas.bft-cert.pem
-      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.bft-cert.pem
+      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.replicas.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.deevo.io-cert.pem
     ports:
       - "8054:7054"
     volumes:

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ORDERER_HOST=orderer0.${ORDERER_ORG}.deevo.io
+ALL_ORGS=(${REPLICAS_ORG} ${ORDERER_ORG} ${PEER_ORGS[*]})
 
 # initOrgVars <ORG>
 function initOrgVars() {
@@ -56,8 +57,6 @@ function initPeerVars() {
 	export PEER_NAME=peer${NUM}.${ORG}.deevo.io
 	export PEER_PASS=${PEER_NAME}pw
 
-	cp -f /config/core.yaml $FABRIC_CFG_PATH/core.yaml
-
 	export PEER_CERT_DIR=$LOCAL_MSP_DIR/$ORG/$PEER_NAME
 	# export FABRIC_CA_CLIENT_HOME=/etc/ca-client
 
@@ -76,6 +75,9 @@ function initPeerVars() {
 	export CORE_PEER_TLS_KEY_FILE=$PEER_TLS_DIR/server.key
 	export CORE_PEER_TLS_CERT_FILE=$PEER_TLS_DIR/server.crt
 
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$PEER_TLS_DIR/server.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$PEER_TLS_DIR/server.key
+
 	# ADMIN_TLS_DIR=$ADMIN_CERT_DIR/tls
 	# export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_TLS_DIR/client.crt
 	# export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_TLS_DIR/client.key
@@ -90,11 +92,29 @@ function initPeerVars() {
 		export CORE_PEER_GOSSIP_BOOTSTRAP=peer0.${ORG}.deevo.io:7051
 		export CORE_PEER_ADDRESSAUTODETECT=true
 	fi
+}
 
-	export ORDERER_TLS_CA=$CRYPTO_DIR/orgs/${ORDERER_ORG}/cacerts/tls.rca.${ORDERER_ORG}.deevo.io-cert.pem
+# initPeerNodeVars
+function initPeerNodeVars() {
+
+	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
 	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
 
-	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_KEY_FILE --certfile $CORE_PEER_TLS_CERT_FILE"
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTCERT_FILE --certfile $CORE_PEER_TLS_CLIENTKEY_FILE"
+}
+
+# initPeerAdminVars
+function initPeerAdminVars() {
+
+	export CORE_PEER_MSPCONFIGPATH=$ADMIN_CERT_DIR/msp
+
+	local KEY=$ADMIN_CERT_DIR/tls/server.key
+	local CRT=$ADMIN_CERT_DIR/tls/server.crt
+
+	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
+	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
+
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $KEY --certfile $CRT"
 }
 
 # initOrdererVars <NUM>
@@ -129,11 +149,12 @@ function initOrdererVars() {
 	# export ORDERER_GENERAL_TLS_CLIENTROOTCAS=[$CA_CHAINFILE]
 	export ORDERER_HOME=/etc/hyperledger/orderer
 	export ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+	export ORDERER_GENERAL_LEDGERTYPE=file
 	export ORDERER_FILELEDGER_LOCATION=/var/hyperledger/production/orderer
 
 	local ROOT_CAS="["
 	for o in ${ALL_ORGS[*]}; do
-		ROOT_CAS="${ROOT_CAS}${CRYPTO_DIR}/cacerts/rca.$o.deevo.io.pem,"
+		ROOT_CAS="${ROOT_CAS}${CRYPTO_DIR}/cacerts/$o/tls.rca.$o.deevo.io-cert.pem,"
 	done
 	ROOT_CAS=${ROOT_CAS%?}
 	ROOT_CAS="$ROOT_CAS]"

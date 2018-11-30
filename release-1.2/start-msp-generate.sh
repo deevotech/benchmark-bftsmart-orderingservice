@@ -2,8 +2,8 @@
 
 set -e
 
-mkdir -p data/logs
-sudo rm -rf data/logs/*
+mkdir -p data/logs/ca
+sudo rm -rf data/logs/ca/*
 mkdir -p crypto-config/
 sudo rm -rf crypto-config/*
 

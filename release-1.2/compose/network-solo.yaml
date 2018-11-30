@@ -1,0 +1,125 @@
+# All elements in this file should depend on the base.yaml
+# Provided solo-base fabric network with:
+
+version: '2'  # v3 does not support 'extends' yet
+
+networks:
+  bftsmart:
+
+services:
+  node0.deevo.io:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: node0.deevo.io
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    environment:
+      - NUMBER=0
+
+  node1.deevo.io:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: node1.deevo.io
+    networks:
+      - bftsmart
+    ports:
+      - "11001:11000"
+    environment:
+      - NUMBER=1
+
+  node2.deevo.io:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: node2.deevo.io
+    networks:
+      - bftsmart
+    ports:
+      - "11002:11000"
+    environment:
+      - NUMBER=2
+
+  node3.deevo.io:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: node3.deevo.io
+    networks:
+      - bftsmart
+    ports:
+      - "11003:11000"
+    environment:
+      - NUMBER=3
+
+  orderer0.org0.deevo.io:  # orderer in solo mode
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer0.org0.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org0
+      - NUMBER=0
+    ports:
+      - "7050:7050"
+    depends_on:
+      - node0.deevo.io
+      - node1.deevo.io
+      - node2.deevo.io
+      - node3.deevo.io
+
+# ## following are peer nodes ##
+
+  peer0.org1.deevo.io:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.org1.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org1
+      - NUMBER=0
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+      - "7053:7053"
+    depends_on:
+      - orderer0.org0.deevo.io
+
+  peer0.org2.deevo.io:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.org2.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org2
+      - NUMBER=0
+    ports:
+      - "9051:7051"
+      - "9052:7052"
+      - "9053:7053"
+    depends_on:
+      - orderer0.org0.deevo.io
+
+  cli: # client node
+    extends:
+      file: base.yaml
+      service: cli-base
+    container_name: fabric-cli
+    networks:
+      - bftsmart
+    environment:
+      - CHANNEL_ID=mychannel
+    depends_on:
+      - peer0.org1.deevo.io
+      - peer0.org2.deevo.io
+    command: bash -c '/scripts/run.sh'
+

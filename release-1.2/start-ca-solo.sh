@@ -2,15 +2,8 @@
 
 set -e
 
-mkdir -p data
-mkdir -p data-config
-mkdir -p data/logs
-# mkdir -p setup
-sudo rm -rf data/channel-artifacts/*
-sudo rm -rf data/logs/*
-sudo rm -rf data-config/*
-mkdir -p data
-# sudo rm -rf setup/*
+mkdir -p data/logs/ca
+sudo rm -rf data/logs/ca/*
 mkdir -p crypto-config/orgs
 sudo rm -rf crypto-config/orgs/*
 

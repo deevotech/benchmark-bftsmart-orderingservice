@@ -27,7 +27,7 @@ Organizations:
         ID: org0MSP
 
         # MSPDir is the filesystem path which contains the MSP configuration.
-        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/org0/msp
+        MSPDir: /etc/hyperledger/msp/channel/org0/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -52,7 +52,7 @@ Organizations:
     - &replicas
         Name: replicas
         ID: replicasMSP
-        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/replicas/msp
+        MSPDir: /etc/hyperledger/msp/channel/replicas/msp
         Policies:
             Readers:
                 Type: Signature
@@ -66,7 +66,7 @@ Organizations:
     - &org1
         Name: org1
         ID: org1MSP
-        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/org1/msp
+        MSPDir: /etc/hyperledger/msp/channel/org1/msp
         Policies: &org1Policies
             Readers:
                 Type: Signature
@@ -86,7 +86,7 @@ Organizations:
     - &org2
         Name: org2
         ID: org2MSP
-        MSPDir: /etc/hyperledger/fabric/crypto-config/orgs/org2/msp
+        MSPDir: /etc/hyperledger/msp/channel/org2/msp
         Policies: &org2Policies
             Readers:
                 Type: Signature

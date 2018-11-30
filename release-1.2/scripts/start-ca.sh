@@ -3,7 +3,7 @@
 SDIR=$(dirname "$0")
 source $SDIR/env.sh
 
-export RUN_SUMPATH=/data/logs/ca-${ORG}.log
+export RUN_SUMPATH=/data/logs/ca/ca-${ORG}.log
 
 mkdir -p ${FABRIC_CA_SERVER_HOME}
 rm -rf ${FABRIC_CA_SERVER_HOME}/*
@@ -68,12 +68,9 @@ db:
 # Affiliations section. Fabric CA server can be bootstrapped with the
 # affiliations specified in this section. Affiliations are specified as maps.
 #############################################################################
-affiliations:">>$FABRIC_CA_SERVER_CONFIG
-# Add the custom orgs
-for o in $FABRIC_ORGS; do
-	echo "  $o: []">>$FABRIC_CA_SERVER_CONFIG
-done
-echo "
+affiliations:
+  $ORG: []
+
 #############################################################################
 #  Signing section
 #############################################################################

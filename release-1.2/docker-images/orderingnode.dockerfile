@@ -26,7 +26,7 @@ apt-get install -y build-essential && \
 apt-get install -y libc6-dev-i386 && \
 apt-get clean;
 
-ENV GOPATH /go
+ENV GOPATH /opt/gopath
 RUN mkdir -p $GOPATH/src/github.com/hyperledger
 WORKDIR $GOPATH/src/github.com/hyperledger
 

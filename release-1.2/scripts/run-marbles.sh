@@ -5,8 +5,8 @@ export RUN_SUMPATH=/data/logs_2/run-marbles.log
 
 export ROOT_CRYPTO_DIR=/etc/hyperledger/fabric/crypto-config
 export ORDERER_ORG=org0
-export ORDERER_HOST=orderer0.${ORDERER_ORG}.bft
-export ORDERER_TLS_CA=$ROOT_CRYPTO_DIR/orgs/${ORDERER_ORG}/ca/rca.${ORDERER_ORG}.bft-cert.pem
+export ORDERER_HOST=orderer0.${ORDERER_ORG}.deevo.io
+export ORDERER_TLS_CA=$ROOT_CRYPTO_DIR/orgs/${ORDERER_ORG}/ca/rca.${ORDERER_ORG}.deevo.io-cert.pem
 export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
 NUM_PEERS=1
 
@@ -20,13 +20,13 @@ function initOrgVars() {
 		exit 1
 	fi
 	ORG=$1
-	ROOT_CA_HOST=rca.${ORG}.bft
-	ROOT_CA_NAME=rca.${ORG}.bft
+	ROOT_CA_HOST=rca.${ORG}.deevo.io
+	ROOT_CA_NAME=rca.${ORG}.deevo.io
 
 	# Root CA admin identity
 	ROOT_CA_ADMIN_USER_PASS=rca-admin:rca-adminpw
 
-	ROOT_CA_CERTFILE=$ROOT_CRYPTO_DIR/orgs/${ORG}/ca/rca.${ORG}.bft-cert.pem
+	ROOT_CA_CERTFILE=$ROOT_CRYPTO_DIR/orgs/${ORG}/ca/rca.${ORG}.deevo.io-cert.pem
 
 	mkdir -p $ARTIFACT_DIR/${ORG}
 
@@ -52,8 +52,8 @@ function initPeerVars() {
 	NUM=$2
 
 	initOrgVars $1
-	PEER_HOST=peer${NUM}.${ORG}.bft
-	PEER_NAME=peer${NUM}.${ORG}.bft
+	PEER_HOST=peer${NUM}.${ORG}.deevo.io
+	PEER_NAME=peer${NUM}.${ORG}.deevo.io
 
 	cp /config/core.yaml $FABRIC_CFG_PATH/core.yaml
 

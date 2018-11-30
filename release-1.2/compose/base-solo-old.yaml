@@ -1,7 +1,7 @@
 # All elements in this file should depend on the base.yaml
 # Provided solo-base fabric network with:
 
-# rca.org0.bft
+# rca.org0.deevo.io
 # ca.org2.example.com
 # orderer.example.com
 # peer0.org1.example.com
@@ -16,6 +16,83 @@ networks:
   bftsmart:
 
 services:
+  rca.replicas.deevo.io: # ca node for ordering nodes
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.replicas.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=replicas
+      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.replicas.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.deevo.io-cert.pem
+    ports:
+      - "8054:7054"
+    volumes:
+      - ../crypto-config/orgs/replicas/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org0.deevo.io: # ca node for org0
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org0.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org0
+      - FABRIC_CA_SERVER_CA_NAME=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org0.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.deevo.io-cert.pem
+      - SERVER_TYPE=orderer
+    ports:
+      - "7054:7054"
+    volumes:
+      - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org1.deevo.io: # ca node for org1
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org1.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org1
+      - FABRIC_CA_SERVER_CA_NAME=rca.org1.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.org1.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org1.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org1.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.deevo.io-cert.pem
+    ports:
+      - "9054:7054"
+    volumes:
+      - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org2.deevo.io: # ca node forbftsmart org2
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org2.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org2
+      - FABRIC_CA_SERVER_CA_NAME=rca.org2.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.org2.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org2.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.deevo.io-cert.pem
+    ports:
+      - "10054:7054"
+    volumes:
+      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+
   bft.node.0:
     extends:
       file: base.yaml
@@ -27,7 +104,6 @@ services:
       - "11000:11000"
     environment:
       - NUMBER=0
-    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.1:
     extends:
@@ -40,7 +116,6 @@ services:
       - "11001:11000"
     environment:
       - NUMBER=1
-    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.2:
     extends:
@@ -53,7 +128,6 @@ services:
       - "11002:11000"
     environment:
       - NUMBER=2
-    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
   bft.node.3:
     extends:
@@ -66,33 +140,32 @@ services:
       - "11003:11000"
     environment:
       - NUMBER=3
-    command: /bin/bash -c '/scripts/start-replica.sh -c 0'
 
-  orderer0.org0.bft:  # orderer in solo mode
+  orderer0.org0.deevo.io:  # orderer in solo mode
     extends:
       file: base.yaml
       service: orderer-base
-    container_name: orderer0.org0.bft
+    container_name: orderer0.org0.deevo.io
     networks:
       - bftsmart
     environment:
       - ORG=org0
       - NODE_ORG=replicas
       - NODE_COUNT=4
-      - ORDERER_PASS=orderer0.org0.bftpw
-      - CORE_PEER_ID=orderer0.org0.bft
+      - ORDERER_PASS=orderer0.org0.deevo.iopw
+      - CORE_PEER_ID=orderer0.org0.deevo.io
       - ADMIN_NAME=admin-org0
       - ADMIN_PASS=admin-org0pw
-      - ORDERING_CA_HOST=rca.replicas.bft
-      - CA_HOST=rca.org0.bft
+      - ORDERING_CA_HOST=rca.replicas.deevo.io
+      - CA_HOST=rca.org0.deevo.io
       - ADMINCERTS=true
-      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.bft:7054
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.deevo.io:7054
       - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
       - ORDERING_CRYPTO_DIR=/var/hyperledger/crypto/replicas
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.deevo.io-cert.pem
       - ORG_MSP=/var/hyperledger/crypto/org/msp
-      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/tls.rca.org0.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org1/tls.rca.org1.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org2/tls.rca.org2.bft-cert.pem,/etc/hyperledger/fabric-ca-server-ordering/tls.rca.replicas.bft-cert.pem]
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/tls.rca.org0.deevo.io-cert.pem,/etc/hyperledger/fabric-ca-server-org1/tls.rca.org1.deevo.io-cert.pem,/etc/hyperledger/fabric-ca-server-org2/tls.rca.org2.deevo.io-cert.pem,/etc/hyperledger/fabric-ca-server-ordering/tls.rca.replicas.deevo.io-cert.pem]
     ports:
       - "7050:7050"
     volumes:
@@ -116,13 +189,13 @@ services:
       - ../crypto-config/orgs/org0/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
       - ../crypto-config/orgs/org0/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
 
-      - ../crypto-config/orgs/org0/orderer0.org0.bft:/var/hyperledger/crypto/orderer
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/keystore:/var/hyperledger/crypto/orderer/msp/keystore
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/tlscacerts:/var/hyperledger/crypto/orderer/msp/tlscacerts
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/signcerts:/var/hyperledger/crypto/orderer/msp/signcerts
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/cacerts:/var/hyperledger/crypto/orderer/msp/cacerts
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/admincerts:/var/hyperledger/crypto/orderer/msp/admincerts
-      - ../crypto-config/orgs/org0/orderer0.org0.bft/tls:/var/hyperledger/crypto/orderer/tls
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io:/var/hyperledger/crypto/orderer
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/msp/keystore:/var/hyperledger/crypto/orderer/msp/keystore
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/msp/tlscacerts:/var/hyperledger/crypto/orderer/msp/tlscacerts
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/msp/signcerts:/var/hyperledger/crypto/orderer/msp/signcerts
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/msp/cacerts:/var/hyperledger/crypto/orderer/msp/cacerts
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/msp/admincerts:/var/hyperledger/crypto/orderer/msp/admincerts
+      - ../crypto-config/orgs/org0/orderer0.org0.deevo.io/tls:/var/hyperledger/crypto/orderer/tls
 
       - ../crypto-config/orgs/org0/admin:/var/hyperledger/crypto/admin
       - ../crypto-config/orgs/org0/admin/msp/:/var/hyperledger/crypto/admin/msp
@@ -135,41 +208,42 @@ services:
 
       - ../data/channel-artifacts:/var/hyperledger/orderer
     depends_on:
+      - rca.org0.deevo.io
+      - rca.replicas.deevo.io
       - bft.node.0
       - bft.node.1
       - bft.node.2
       - bft.node.3
-    command: /bin/bash -c '/scripts/start-orderer.sh -c 0'
 
 # ## following are peer nodes ##
 
-  peer0.org1.bft:
+  peer0.org1.deevo.io:
     extends:
       file: base.yaml
       service: peer-base
-    container_name: peer0.org1.bft
+    container_name: peer0.org1.deevo.io
     networks:
       - bftsmart
     environment:
       - ORG=org1
-      - PEER_PASS=peer0.org1.bftpw
+      - PEER_PASS=peer0.org1.deevo.iopw
       - ADMIN_NAME=admin-org1
       - ADMIN_PASS=admin-org1pw
       - USER_NAME=user-org1
       - USER_PASS=user-org1pw
-      - CA_HOST=rca.org1.bft
+      - CA_HOST=rca.org1.deevo.io
       - ADMINCERTS=true
-      - CORE_PEER_ID=peer0.org1.bft
-      - CORE_PEER_ADDRESS=peer0.org1.bft:7051
-      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org1.bft:7052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.bft:7051
+      - CORE_PEER_ID=peer0.org1.deevo.io
+      - CORE_PEER_ADDRESS=peer0.org1.deevo.io:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org1.deevo.io:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.deevo.io:7051
       - CORE_PEER_LOCALMSPID=org1MSP
-      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org1.bft:7054
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org1.deevo.io:7054
       - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org1.deevo.io-cert.pem
       - ORG_MSP=/var/hyperledger/crypto/org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org1.bft-cert.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org1.deevo.io-cert.pem
     volumes:
       - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
       - ../crypto-config/orgs/org0/msp/:/etc/hyperledger/fabric/crypto-config/orgs/org0/msp
@@ -181,13 +255,13 @@ services:
       - ../crypto-config/orgs/org1/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
       - ../crypto-config/orgs/org1/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
 
-      - ../crypto-config/orgs/org1/peer0.org1.bft:/var/hyperledger/crypto/peer
-      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
-      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
-      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
-      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
-      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
-      - ../crypto-config/orgs/org1/peer0.org1.bft/tls:/var/hyperledger/crypto/peer/tls
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io:/var/hyperledger/crypto/peer
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
+      - ../crypto-config/orgs/org1/peer0.org1.deevo.io/tls:/var/hyperledger/crypto/peer/tls
 
       - ../crypto-config/orgs/org1/admin:/var/hyperledger/crypto/admin
       - ../crypto-config/orgs/org1/admin/msp/:/var/hyperledger/crypto/admin/msp
@@ -212,37 +286,37 @@ services:
       - "7052:7052"
       - "7053:7053"
     depends_on:
-      - orderer0.org0.bft
-    command: /bin/bash -c '/scripts/start-peer.sh -c 0'
+      - rca.org1.deevo.io
+      - orderer0.org0.deevo.io
 
-  peer0.org2.bft:
+  peer0.org2.deevo.io:
     extends:
       file: base.yaml
       service: peer-base
-    container_name: peer0.org2.bft
+    container_name: peer0.org2.deevo.io
     networks:
       - bftsmart
     environment:
       - ORG=org2
-      - PEER_PASS=peer0.org2.bftpw
+      - PEER_PASS=peer0.org2.deevo.iopw
       - ADMIN_NAME=admin-org2
       - ADMIN_PASS=admin-org2pw
       - USER_NAME=user-org2
       - USER_PASS=user-org2pw
-      - CA_HOST=rca.org2.bft
+      - CA_HOST=rca.org2.deevo.io
       - ADMINCERTS=true
-      - CORE_PEER_ID=peer0.org2.bft
-      - CORE_PEER_ADDRESS=peer0.org2.bft:7051
-      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org2.bft:7052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.bft:7051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.bft:7051
+      - CORE_PEER_ID=peer0.org2.deevo.io
+      - CORE_PEER_ADDRESS=peer0.org2.deevo.io:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org2.deevo.io:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.deevo.io:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.deevo.io:7051
       - CORE_PEER_LOCALMSPID=org2MSP
-      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org2.bft:7054
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org2.deevo.io:7054
       - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
       - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
-      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org2.deevo.io-cert.pem
       - ORG_MSP=/var/hyperledger/crypto/org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org2.bft-cert.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org2.deevo.io-cert.pem
     volumes:
       - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
       - ../crypto-config/orgs/org0/msp/:/etc/hyperledger/fabric/crypto-config/orgs/org0/msp
@@ -254,13 +328,13 @@ services:
       - ../crypto-config/orgs/org2/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
       - ../crypto-config/orgs/org2/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
 
-      - ../crypto-config/orgs/org2/peer0.org2.bft:/var/hyperledger/crypto/peer
-      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
-      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
-      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
-      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
-      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
-      - ../crypto-config/orgs/org2/peer0.org2.bft/tls:/var/hyperledger/crypto/peer/tls
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io:/var/hyperledger/crypto/peer
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
+      - ../crypto-config/orgs/org2/peer0.org2.deevo.io/tls:/var/hyperledger/crypto/peer/tls
 
       - ../crypto-config/orgs/org2/admin:/var/hyperledger/crypto/admin
       - ../crypto-config/orgs/org2/admin/msp/:/var/hyperledger/crypto/admin/msp
@@ -285,8 +359,8 @@ services:
       - "9052:7052"
       - "9053:7053"
     depends_on:
-      - orderer0.org0.bft
-    command: /bin/bash -c '/scripts/start-peer.sh -c 0'
+      - rca.org2.deevo.io
+      - orderer0.org0.deevo.io
 
   cli: # client node
     extends:
@@ -299,7 +373,6 @@ services:
       - CHANNEL_ID=mychannel
       - PEER_ORGS=org1 org2
     depends_on:
-      - peer0.org1.bft
-      - peer0.org2.bft
-    command: bash -c '/scripts/run.sh -c 0'
+      - peer0.org1.deevo.io
+      - peer0.org2.deevo.io
 

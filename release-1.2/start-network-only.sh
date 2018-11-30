@@ -3,11 +3,9 @@
 set -e
 
 mkdir -p data
-mkdir -p data-config
 mkdir -p data/logs
 sudo rm -rf data/channel-artifacts/*
 sudo rm -rf data/logs/*
-sudo rm -rf data-config/*
 mkdir -p data
 
 # Remove all containers

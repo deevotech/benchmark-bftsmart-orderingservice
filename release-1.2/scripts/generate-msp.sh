@@ -1,9 +1,8 @@
 SDIR=$(dirname "$0")
 source $SDIR/env.sh
 
-export RUN_SUMPATH=/data/logs/msp.log
+export RUN_SUMPATH=/data/logs/ca/msp.log
 
-ALL_ORGS=(${REPLICAS_ORG} ${ORDERER_ORG} ${PEER_ORGS[*]})
 declare -A NODES='('${NODE_COUNT}')'
 
 function enrollCAAdmin() {
@@ -14,17 +13,20 @@ function enrollCAAdmin() {
 }
 
 function getCACerts() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: getCACerts <ORG>: $*"
+		exit 1
+	fi
+
+	local org=$1
 	logr "Getting CA certificates ..."
 
-	cleanOrCreateDirectory $FABRIC_CA_CLIENT_HOME
-	logr "Getting CA certs for organization $ORG and storing in $FABRIC_CA_CLIENT_HOME"
-	mkdir -p $ORG_MSP_DIR
-	fabric-ca-client getcacert -d -M $FABRIC_CA_CLIENT_HOME -u $ENROLLMENT_URL
-	# --enrollment.profile tls
-	# cp $ROOT_CA_CERTFILE $ORG_MSP_DIR/cacerts
+	cleanOrCreateDirectory $ORG_MSP_DIR
+	logr "Getting CA certs for organization $org and storing in $ORG_MSP_DIR"
+	fabric-ca-client getcacert -d -M $ORG_MSP_DIR -u $ENROLLMENT_URL --enrollment.profile tls
+	fabric-ca-client getcacert -d -M $ORG_MSP_DIR -u $ENROLLMENT_URL
 
-	# # Copy CA cert
-	# cp $ROOT_CA_CERTFILE $FABRIC_CA_CLIENT_HOME/msp/cacerts
+	cp $ORG_MSP_DIR/tlscacerts/* $CRYPTO_DIR/cacerts/${org}/tls.${org}.pem
 }
 
 function registerPeerIdentities() {
@@ -73,13 +75,6 @@ function createPeerMSPs() {
 
 		cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
 		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
-
-		logr "Copy the org's CA cert into channel MSP directory"
-
-		cleanOrCreateDirectory $ORG_MSP_DIR/cacerts
-		cp $ROOT_CA_CERTFILE $ORG_MSP_DIR/cacerts
-		cleanOrCreateDirectory $ORG_MSP_DIR/tlscacerts
-		cp $ROOT_TLS_CERTFILE $ORG_MSP_DIR/tlscacerts
 	fi
 
 	logr "Generate server TLS cert and key pair for the peer"
@@ -140,13 +135,6 @@ function createOrdererMSPs() {
 
 		cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
 		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
-
-		logr "Copy the org's CA cert into channel MSP directory"
-
-		cleanOrCreateDirectory $ORG_MSP_DIR/cacerts
-		cp $ROOT_CA_CERTFILE $ORG_MSP_DIR/cacerts
-		cleanOrCreateDirectory $ORG_MSP_DIR/tlscacerts
-		cp $ROOT_TLS_CERTFILE $ORG_MSP_DIR/tlscacerts
 	fi
 
 	logr "Generate server TLS cert and key pair for the orderer"
@@ -185,29 +173,22 @@ function createReplicaMSPsAndCerts() {
 	local org=$1
 	local num=$2
 
-		logr "Generate client TLS cert and key pair for the admin of $org"
-		genMSPCerts bft.node $NODE_ORG_ADMIN $NODE_ORG_ADMIN_PW $org $CA_HOST $ADMIN_CERT_DIR/msp
-		cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/cacerts
-		cp $ROOT_CA_CERTFILE $ADMIN_CERT_DIR/msp/cacerts
+	logr "Generate client TLS cert and key pair for the admin of $org"
+	genMSPCerts bft.node $NODE_ORG_ADMIN $NODE_ORG_ADMIN_PW $org $CA_HOST $ADMIN_CERT_DIR/msp
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/cacerts
+	cp $ROOT_CA_CERTFILE $ADMIN_CERT_DIR/msp/cacerts
 
-		cleanOrCreateDirectory $ADMIN_CERT_DIR/tls
-		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/server.crt
-		cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/server.key
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/tls
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/server.crt
+	cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/server.key
 
-		cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/admincerts
-		cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/msp/admincerts/admin@$org.pem
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/admincerts
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/msp/admincerts/admin@$org.pem
 
-		logr "Copy the org's admin cert into channel MSP directory"
+	logr "Copy the org's admin cert into channel MSP directory"
 
-		cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
-		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
-
-		logr "Copy the org's CA cert into channel MSP directory"
-
-		cleanOrCreateDirectory $ORG_MSP_DIR/cacerts
-		cp $ROOT_CA_CERTFILE $ORG_MSP_DIR/cacerts
-		cleanOrCreateDirectory $ORG_MSP_DIR/tlscacerts
-		cp $ROOT_TLS_CERTFILE $ORG_MSP_DIR/tlscacerts
+	cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
 
 	logr "Generate server TLS cert and key pair for the nodes"
 
@@ -241,26 +222,28 @@ function createReplicaMSPsAndCerts() {
 
 function main() {
 	# wait for CA servers
-	sleep 10
+	sleep 15
 
-	# for ORG in ${PEER_ORGS[*]}; do
-	# 	initOrgVars $ORG
-	# 	enrollCAAdmin
+	for ORG in ${PEER_ORGS[*]}; do
+		initOrgVars $ORG
+		enrollCAAdmin
+		getCACerts $ORG
 
-	# 	COUNT=0
-	# 	while [ $COUNT -lt ${NODES[$ORG]} ]; do
-	# 		log "Generate msp for peer${COUNT}.${ORG}"
+		COUNT=0
+		while [ $COUNT -lt ${NODES[$ORG]} ]; do
+			log "Generate msp for peer${COUNT}.${ORG}"
 
-	# 		initPeerVars $ORG ${COUNT}
-	# 		registerPeerIdentities $ORG ${COUNT}
-	# 		createPeerMSPs $ORG ${COUNT}
+			initPeerVars $ORG ${COUNT}
+			registerPeerIdentities $ORG ${COUNT}
+			createPeerMSPs $ORG ${COUNT}
 
-	# 		COUNT=$((COUNT + 1))
-	# 	done
-	# done
+			COUNT=$((COUNT + 1))
+		done
+	done
 
 	initOrgVars $ORDERER_ORG
 	enrollCAAdmin
+	getCACerts $ORDERER_ORG
 
 	COUNT=0
 	while [ $COUNT -lt ${NODES[$ORDERER_ORG]} ]; do
@@ -275,11 +258,12 @@ function main() {
 
 	initOrgVars $REPLICAS_ORG
 	enrollCAAdmin
+	getCACerts $REPLICAS_ORG
 
 	export NODE_ORG_ADMIN=replicas-admin
 	export NODE_ORG_ADMIN_PW=replicas-admin-pw
 	registerReplicaAdmin $REPLICAS_ORG
-    createReplicaMSPsAndCerts $REPLICAS_ORG ${NODES[$REPLICAS_ORG]}
+	createReplicaMSPsAndCerts $REPLICAS_ORG ${NODES[$REPLICAS_ORG]}
 }
 
 main
