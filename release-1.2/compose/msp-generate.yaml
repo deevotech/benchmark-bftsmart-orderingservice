@@ -76,6 +76,23 @@ services:
     ports:
       - "11054:7054"
 
+  rca.master.deevo.io: # ca node for master
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.master.deevo.io
+    networks:
+      - bftsmart
+    environment:
+      - ORG=master
+      - FABRIC_CA_SERVER_CA_NAME=rca.master.deevo.io
+      - FABRIC_CA_SERVER_CSR_CN=rca.master.deevo.io
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.master.deevo.io
+      - FABRIC_CA_SERVER_TLS_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/master/tls.rca.master.deevo.io-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=${CLIENT_CRYPTO_DIR}/cacerts/master/rca.master.deevo.io-cert.pem
+    ports:
+      - "12054:7054"
+
   cli: # client node
     extends:
       file: base.yaml
@@ -90,5 +107,6 @@ services:
       - rca.org1.deevo.io
       - rca.org2.deevo.io
       - rca.replicas.deevo.io
+      - rca.master.deevo.io
     command: /bin/bash -c '/scripts/generate-msp.sh'
 

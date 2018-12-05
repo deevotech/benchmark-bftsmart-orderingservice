@@ -220,10 +220,54 @@ function createReplicaMSPsAndCerts() {
 	done
 }
 
+function createOrgIdentities() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: registerPeerIdentities <ORG>: $*"
+		exit 1
+	fi
+
+	local org=$1
+
+	fabric-ca-client affiliation add master.$org
+
+	logr "Registering admin identity with $ADMIN_NAME:$ADMIN_PASS"
+	# The admin identity has the "admin" attribute which is added to ECert by default
+	fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.affiliation master.$org --id.attrs '"hf.Registrar.Roles=user"' --id.attrs '"hf.Registrar.Attributes=*"' --id.attrs 'hf.Revoker=true,hf.GenCRL=true,admin=true:ecert'
+	logr "Registering user identity with $USER_NAME:$USER_PASS"
+	fabric-ca-client register -d --id.name $USER_NAME --id.secret $USER_PASS --id.affiliation master.$org --id.attrs '"hf.Registrar.Roles=user"'
+}
+
+function createOrgMSPs() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: createPeerMSPs <ORG>: $*"
+		exit 1
+	fi
+
+	local org=$1
+
+	logr "Generate client TLS cert and key pair for the admin of $org"
+	genMSPCerts $PEER_HOST $ADMIN_NAME $ADMIN_PASS $org $CA_HOST $ADMIN_CERT_DIR/msp
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/cacerts
+	cp $ROOT_CA_CERTFILE $ADMIN_CERT_DIR/msp/cacerts
+
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/tls
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/tls/server.crt
+	cp $ADMIN_CERT_DIR/msp/keystore/* $ADMIN_CERT_DIR/tls/server.key
+
+	cleanOrCreateDirectory $ADMIN_CERT_DIR/msp/admincerts
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ADMIN_CERT_DIR/msp/admincerts/admin@$org.pem
+
+	logr "Copy the org's admin cert into channel MSP directory"
+
+	cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
+	cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
+}
+
 function main() {
 	# wait for CA servers
 	sleep 15
 
+	# Peer MSP
 	for ORG in ${PEER_ORGS[*]}; do
 		initOrgVars $ORG
 		enrollCAAdmin
@@ -241,6 +285,7 @@ function main() {
 		done
 	done
 
+	# Orderer MSP
 	initOrgVars $ORDERER_ORG
 	enrollCAAdmin
 	getCACerts $ORDERER_ORG
@@ -256,6 +301,7 @@ function main() {
 		COUNT=$((COUNT + 1))
 	done
 
+	# Replicas MSP
 	initOrgVars $REPLICAS_ORG
 	enrollCAAdmin
 	getCACerts $REPLICAS_ORG
@@ -264,6 +310,29 @@ function main() {
 	export NODE_ORG_ADMIN_PW=replicas-admin-pw
 	registerReplicaAdmin $REPLICAS_ORG
 	createReplicaMSPsAndCerts $REPLICAS_ORG ${NODES[$REPLICAS_ORG]}
+
+	local caOrg="master"
+
+	# Auditors MSP
+	initOrgAndCAVars "auditors" $caOrg
+	enrollCAAdmin
+	getCACerts "auditors"
+	createOrgIdentities "auditors"
+	createOrgMSPs "auditors" 
+
+	# AimThaiMSP
+	initOrgAndCAVars "aimthai" $caOrg
+	enrollCAAdmin
+	getCACerts "aimthai"
+	createOrgIdentities "aimthai"
+	createOrgMSPs "aimthai" 
+
+	# HiChefMSP
+	initOrgAndCAVars "hichef" $caOrg
+	enrollCAAdmin
+	getCACerts "hichef"
+	createOrgIdentities "hichef"
+	createOrgMSPs "hichef" 
 }
 
 main

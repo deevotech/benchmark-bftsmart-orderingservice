@@ -51,7 +51,7 @@ done
 
 logr "Creating channel '$CHANNEL_ID' on $ORDERER_HOST from ${PEER_ORGS_ARRAY[0]} ..."
 initPeerVars ${PEER_ORGS_ARRAY[0]} 0
-initPeerAdminVars
+initPeerAdminCLI
 logr "orderer connection $ORDERER_CONN_ARGS"
 peer channel create --logging-level=DEBUG -c $CHANNEL_ID -f $CHANNEL_TX_FILE $ORDERER_CONN_ARGS --outputBlock $CHANNEL_BLOCK_FILE 2>&1 | tee -a /data/logs/network/create_channel.log &
 
@@ -62,7 +62,7 @@ for ORG in ${PEER_ORGS[*]}; do
 	COUNT=0
 	while [ $COUNT -lt ${NODES[$ORG]} ]; do
 		initPeerVars $ORG $COUNT
-		initPeerAdminVars
+		initPeerAdminCLI
 		C=1
 		MAX_RETRY=1
 		while true; do
@@ -88,7 +88,7 @@ sleep 5
 logr "Update the anchor peers"
 for ORG in ${PEER_ORGS[*]}; do
 	initPeerVars $ORG 0
-	initPeerAdminVars
+	initPeerAdminCLI
 
 	ANCHOR_TX_FILE=$ARTIFACTS_DIR/$ORG/anchors.tx
 	echo $ORDERER_CONN_ARGS
@@ -104,7 +104,7 @@ sleep 1
 logr "install chaincode on peer0"
 for ORG in ${PEER_ORGS[*]}; do
 	initPeerVars $ORG 0
-	initPeerAdminVars
+	initPeerAdminCLI
 
 	logr "Install chaincode for $PEER_HOST ..."
 	peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go 2>&1 | tee -a /data/logs/network/${PEER_HOST}_install.log &
@@ -117,7 +117,7 @@ sleep 30
 logr "instantiate chaincode on ${PEER_ORGS_ARRAY[0]} peer0"
 POLICY="OR('org1MSP.member','org2MSP.member')"
 initPeerVars ${PEER_ORGS_ARRAY[0]} 0
-initPeerAdminVars
+initPeerAdminCLI
 
 peer chaincode instantiate -C $CHANNEL_ID -n ${CHAINCODE_NAME} -v 1.0 -P ${POLICY} -c '{"Args":["init","a","100","b","200"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/network/instantiate.log &
 
@@ -133,7 +133,7 @@ peer chaincode query -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["query","a
 sleep 10
 
 initPeerVars ${PEER_ORGS_ARRAY[1]} 0
-initPeerAdminVars
+initPeerAdminCLI
 
 logr "invoke a -> b"
 peer chaincode invoke -C $CHANNEL_ID -n ${CHAINCODE_NAME} -c '{"Args":["invoke","a","b","10"]}' $ORDERER_CONN_ARGS 2>&1 | tee -a /data/logs/network/query2.log &

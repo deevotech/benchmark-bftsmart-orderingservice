@@ -63,67 +63,6 @@ Organizations:
             Admins:
                 Type: Signature
                 Rule: "OR('replicasMSP.admin')"
-
-    - &deevo
-        Name: deevo
-        ID: deevoMSP
-        MSPDir: /etc/hyperledger/msp/channel/deevo/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('deevoMSP.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('deevoMSP.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('deevoMSP.admin')"
-
-    - &aimthai
-        Name: aimthai
-        ID: aimthaiMSP
-        MSPDir: /etc/hyperledger/msp/channel/aimthai/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('aimthaiMSP.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('aimthaiMSP.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('aimthaiMSP.admin')"
-
-    - &hichef
-        Name: hichef
-        ID: hichefMSP
-        MSPDir: /etc/hyperledger/msp/channel/hichef/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('hichefMSP.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('hichefMSP.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('hichefMSP.admin')"
-
-    - &auditors
-        Name: auditors
-        ID: auditorsMSP
-        MSPDir: /etc/hyperledger/msp/channel/auditors/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('auditorsMSP.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('auditorsMSP.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('auditorsMSP.admin')"
-
     - &org1
         Name: org1
         ID: org1MSP
@@ -472,24 +411,11 @@ Profiles:
             Organizations:
                 - *org1
                 - *org2
-                - *auditors
-                - *aimthai
-                - *hichef
         Consortiums:
             SampleConsortium:
                 Organizations:
                     - *org1
                     - *org2
-            AimThaiConsortium:
-                Organizations:
-                    - *org1
-                    - *org2
-                    - *aimthai
-            HiChefConsortium:
-                Organizations:
-                    - *org1
-                    - *org2
-                    - *hichef
 
     # SampleSingleMSPChannel defines a channel with only the sample org as a
     # member. It is designed to be used in conjunction with SampleSingleMSPSolo
@@ -501,21 +427,3 @@ Profiles:
             Organizations:
                 - *org1
                 - *org2
-
-    AimThaiChannel:
-        Consortium: AimThaiConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *org1
-                - *org2
-                - *aimthai
-
-    HiChefChannel:
-        Consortium: HiChefConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *org1
-                - *org2
-                - *hichef

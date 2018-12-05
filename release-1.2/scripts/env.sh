@@ -43,6 +43,46 @@ function initOrgVars() {
 	export ADMIN_CERT_DIR=$LOCAL_MSP_DIR/$ORG/users/admin
 }
 
+# initOrgAndCAVars <ORG>
+function initOrgAndCAVars() {
+	if [ $# -ne 2 ]; then
+		echo "Usage: initOrgAndCAVars <ORG> <CAORG>"
+		exit 1
+	fi
+	local ORG=$1
+	local CA_ORG=$2
+
+	ROOT_CA_HOST=rca.${CA_ORG}.deevo.io
+	ROOT_CA_NAME=rca.${CA_ORG}.deevo.io
+
+	# Admin identity for the org
+	ADMIN_NAME=admin-${ORG}
+	ADMIN_PASS=${ADMIN_NAME}pw
+	# Typical user identity for the org
+	USER_NAME=user-${ORG}
+	USER_PASS=${USER_NAME}pw
+
+	# Root CA admin identity
+	ROOT_CA_ADMIN_USER_PASS=rca-admin:rca-adminpw
+
+	export ROOT_CA_CERTFILE=$CRYPTO_DIR/cacerts/${CA_ORG}/rca.${CA_ORG}.deevo.io-cert.pem
+	export ROOT_TLS_CERTFILE=$CRYPTO_DIR/cacerts/${CA_ORG}/tls.rca.${CA_ORG}.deevo.io-cert.pem
+
+	ANCHOR_TX_FILE=$ARTIFACT_DIR/${ORG}/anchors.tx
+	ORG_MSP_ID=${ORG}MSP
+	ORG_MSP_DIR=$CHANNEL_MSP_DIR/${ORG}/msp
+
+	export CA_NAME=$ROOT_CA_NAME
+	export CA_HOST=$ROOT_CA_HOST
+	export CA_CHAINFILE=$ROOT_CA_CERTFILE
+	export CA_ADMIN_USER_PASS=$ROOT_CA_ADMIN_USER_PASS
+	export ENROLLMENT_URL=https://$ROOT_CA_ADMIN_USER_PASS@$ROOT_CA_HOST:7054
+	export FABRIC_CA_CLIENT_TLS_CERTFILES=$ROOT_CA_CERTFILE
+	export FABRIC_CA_CLIENT_HOME=$CRYPTO_DIR/orgs/$ORG/ca-client
+
+	export ADMIN_CERT_DIR=$LOCAL_MSP_DIR/$ORG/users/admin
+}
+
 # initPeerVars <ORG> <NUM>
 function initPeerVars() {
 	if [ $# -ne 2 ]; then
@@ -94,27 +134,15 @@ function initPeerVars() {
 	fi
 }
 
-# initPeerNodeVars
-function initPeerNodeVars() {
-
-	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
-	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
-
-	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTCERT_FILE --certfile $CORE_PEER_TLS_CLIENTKEY_FILE"
-}
-
-# initPeerAdminVars
-function initPeerAdminVars() {
+function initPeerAdminCLI() {
 
 	export CORE_PEER_MSPCONFIGPATH=$ADMIN_CERT_DIR/msp
-
-	local KEY=$ADMIN_CERT_DIR/tls/server.key
-	local CRT=$ADMIN_CERT_DIR/tls/server.crt
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_CERT_DIR/tls/server.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_CERT_DIR/tls/server.key
 
 	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
 	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
-
-	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $KEY --certfile $CRT"
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
 }
 
 # initOrdererVars <NUM>
@@ -145,20 +173,24 @@ function initOrdererVars() {
 	export TLSDIR=$ORDERER_CERT_DIR/tls
 	export ORDERER_GENERAL_TLS_PRIVATEKEY=$TLSDIR/server.key
 	export ORDERER_GENERAL_TLS_CERTIFICATE=$TLSDIR/server.crt
+	export ORDERER_GENERAL_TLS_ROOTCAS=[${ROOT_CAS}${CRYPTO_DIR}/cacerts/$ORG/tls.rca.$ORG.deevo.io-cert.pem]
 	# export ORDERER_GENERAL_TLS_ROOTCAS=[$CA_CHAINFILE]
 	# export ORDERER_GENERAL_TLS_CLIENTROOTCAS=[$CA_CHAINFILE]
 	export ORDERER_HOME=/etc/hyperledger/orderer
-	export ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
 	export ORDERER_GENERAL_LEDGERTYPE=file
 	export ORDERER_FILELEDGER_LOCATION=/var/hyperledger/production/orderer
 
-	local ROOT_CAS="["
-	for o in ${ALL_ORGS[*]}; do
-		ROOT_CAS="${ROOT_CAS}${CRYPTO_DIR}/cacerts/$o/tls.rca.$o.deevo.io-cert.pem,"
-	done
-	ROOT_CAS=${ROOT_CAS%?}
-	ROOT_CAS="$ROOT_CAS]"
-	export ORDERER_GENERAL_TLS_ROOTCAS=$ROOT_CAS
+	export ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+	# export ORDERER_TLS_CLIENTCERT_FILE=$TLSDIR/server.crt
+	# export ORDERER_TLS_CLIENTKEY_FILE=$TLSDIR/server.key
+	export ORDERER_GENERAL_TLS_CLIENTROOTCAS=[${ROOT_CAS}${CRYPTO_DIR}/cacerts/$ORG/tls.rca.$ORG.deevo.io-cert.pem]
+
+	# local ROOT_CAS="["
+	# for o in ${ALL_ORGS[*]}; do
+	# 	ROOT_CAS="${ROOT_CAS}${CRYPTO_DIR}/cacerts/$o/tls.rca.$o.deevo.io-cert.pem,"
+	# done
+	# ROOT_CAS=${ROOT_CAS%?}
+	# ROOT_CAS="$ROOT_CAS]"
 }
 
 function cleanOrCreateDirectory() {
@@ -178,9 +210,9 @@ function cleanOrCreateDirectory() {
 function log() {
 	if [ "$1" = "-n" ]; then
 		shift
-		echo -ne "\e[91m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
+		echo -ne "\e[105m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
 	else
-		echo -e "\e[91m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
+		echo -e "\e[105m##### $(date '+%Y-%m-%d %H:%M:%S') ##### $*\e[0m"
 	fi
 }
 
