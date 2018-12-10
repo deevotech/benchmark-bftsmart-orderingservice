@@ -35,7 +35,7 @@ function start-orderer() {
 	./startFrontend.sh 1000 10 9999 2>&1 | tee -a $RUN_FRONTEND &
 
 	logr "Wait for frontend"
-	sleep 10
+	sleep 15
 
 	logr "Start orderer"
 	orderer start 2>&1 | tee -a $RUN_SUMPATH

@@ -41,6 +41,7 @@ function initOrgVars() {
 	export FABRIC_CA_CLIENT_HOME=$CRYPTO_DIR/orgs/$ORG/ca-client
 
 	export ADMIN_CERT_DIR=$LOCAL_MSP_DIR/$ORG/users/admin
+	export USER_CERT_DIR=$LOCAL_MSP_DIR/$ORG/users/user
 }
 
 # initOrgAndCAVars <ORG>
@@ -139,6 +140,17 @@ function initPeerAdminCLI() {
 	export CORE_PEER_MSPCONFIGPATH=$ADMIN_CERT_DIR/msp
 	export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_CERT_DIR/tls/server.crt
 	export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_CERT_DIR/tls/server.key
+
+	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
+	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
+}
+
+function initPeerUserCLI() {
+
+	export CORE_PEER_MSPCONFIGPATH=$USER_CERT_DIR/msp
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$USER_CERT_DIR/tls/server.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$USER_CERT_DIR/tls/server.key
 
 	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
 	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
