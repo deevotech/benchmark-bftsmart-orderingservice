@@ -7,7 +7,7 @@ export RUN_SUMPATH=$LOG_DIR/run-marbles.log
 declare -A NODES='('${NODE_COUNT}')'
 declare -a PEER_ORGS_ARRAY='('${PEER_ORGS[*]}')'
 
-cp -f /config/configtx-aimthai.yaml $FABRIC_CFG_PATH/configtx.yaml
+cp -f /config/configtx.yaml $FABRIC_CFG_PATH/configtx.yaml
 cp -f /config/core.yaml $FABRIC_CFG_PATH/core.yaml
 
 CHANNEL_TX_FILE=$ARTIFACT_DIR/$CHANNEL_ID.tx
@@ -118,8 +118,7 @@ sleep 10
 
 logr "query chaincode"
 
-initPeerVars ${PEER_ORGS_ARRAY[0]} 0
-initPeerUserCLI
+initClientVars aimthai
 
 ENDORSER_PEER="--peerAddresses peer0.org1.deevo.io:7051 --tlsRootCertFiles $CRYPTO_DIR/cacerts/org1/rca.org1.deevo.io-cert.pem --peerAddresses peer0.org2.deevo.io:7051 --tlsRootCertFiles $CRYPTO_DIR/cacerts/org2/rca.org2.deevo.io-cert.pem"
 

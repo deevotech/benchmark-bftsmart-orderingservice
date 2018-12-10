@@ -76,15 +76,19 @@ function createPeerMSPs() {
 		cleanOrCreateDirectory $ORG_MSP_DIR/admincerts
 		cp $ADMIN_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/admincerts/admin@$org.pem
 
-		# logr "Generate client TLS cert and key pair for the user of $org"
-		# genMSPCerts $PEER_HOST $USER_NAME $USER_PASS $org $CA_HOST $USER_CERT_DIR/msp
-		# cleanOrCreateDirectory $USER_CERT_DIR/msp/cacerts
-		# cp $ROOT_CA_CERTFILE $USER_CERT_DIR/msp/cacerts
+		logr "Generate client TLS cert and key pair for the user of $org"
+		genMSPCerts $PEER_HOST $USER_NAME $USER_PASS $org $CA_HOST $USER_CERT_DIR/msp
+		cleanOrCreateDirectory $USER_CERT_DIR/msp/cacerts
+		cp $ROOT_CA_CERTFILE $USER_CERT_DIR/msp/cacerts
 
-		# cleanOrCreateDirectory $USER_CERT_DIR/msp/admincerts
-		# cp $ADMIN_CERT_DIR/msp/signcerts/* $USER_CERT_DIR/msp/admincerts/admin@$org.pem
-		# cleanOrCreateDirectory $ORG_MSP_DIR/user
-		# cp $USER_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/user/user@$org.pem
+		cleanOrCreateDirectory $USER_CERT_DIR/tls
+		cp $USER_CERT_DIR/msp/signcerts/* $USER_CERT_DIR/tls/server.crt
+		cp $USER_CERT_DIR/msp/keystore/* $USER_CERT_DIR/tls/server.key
+
+		cleanOrCreateDirectory $USER_CERT_DIR/msp/admincerts
+		cp $ADMIN_CERT_DIR/msp/signcerts/* $USER_CERT_DIR/msp/admincerts/admin@$org.pem
+		cleanOrCreateDirectory $ORG_MSP_DIR/user
+		cp $USER_CERT_DIR/msp/signcerts/* $ORG_MSP_DIR/user/user@$org.pem
 	fi
 
 	logr "Generate server TLS cert and key pair for the peer"
@@ -99,8 +103,8 @@ function createPeerMSPs() {
 
 	cleanOrCreateDirectory $PEER_CERT_DIR/msp/admincerts
 	cp $ADMIN_CERT_DIR/msp/signcerts/* $PEER_CERT_DIR/msp/admincerts/admin@$org.pem
-	# cleanOrCreateDirectory $PEER_CERT_DIR/msp/user
-	# cp $USER_CERT_DIR/msp/signcerts/* $PEER_CERT_DIR/msp/user/user@$org.pem
+	cleanOrCreateDirectory $PEER_CERT_DIR/msp/user
+	cp $USER_CERT_DIR/msp/signcerts/* $PEER_CERT_DIR/msp/user/user@$org.pem
 }
 
 function registerOrdererIdentities() {

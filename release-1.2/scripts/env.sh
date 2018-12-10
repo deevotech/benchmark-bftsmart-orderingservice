@@ -135,6 +135,48 @@ function initPeerVars() {
 	fi
 }
 
+# initClientVars <ORG>
+function initClientVars() {
+	if [ $# -ne 1 ]; then
+		echo "Usage: initClientVars <ORG>: $*"
+		exit 1
+	fi
+	ORG=$1
+
+	initOrgVars $1
+	export PEER_HOST=peer.${ORG}.deevo.io
+	export PEER_NAME=peer.${ORG}.deevo.io
+
+	local caChain=$CRYPTO_DIR/cacerts/master/rca.master.deevo.io-cert.pem
+
+	export CORE_PEER_ID=$PEER_HOST
+	export CORE_PEER_ADDRESS=$PEER_HOST:7051
+	export CORE_PEER_LOCALMSPID=$ORG_MSP_ID
+	export CORE_LOGGING_LEVEL=debug
+	export CORE_PEER_TLS_ENABLED=true
+	export CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
+	export CORE_PEER_TLS_ROOTCERT_FILE=$caChain
+	export CORE_PEER_TLS_CLIENTROOTCAS_FILES=$caChain
+	export PEER_GOSSIP_SKIPHANDSHAKE=true
+
+	export CORE_PEER_PROFILE_ENABLED=true
+	# gossip variables
+	export CORE_PEER_GOSSIP_USELEADERELECTION=true
+	export CORE_PEER_GOSSIP_ORGLEADER=false
+	export CORE_PEER_GOSSIP_EXTERNALENDPOINT=$PEER_HOST:7051
+
+	export CORE_PEER_MSPCONFIGPATH=$ADMIN_CERT_DIR/msp
+	export CORE_PEER_TLS_CLIENTCERT_FILE=$ADMIN_CERT_DIR/tls/server.crt
+	export CORE_PEER_TLS_CLIENTKEY_FILE=$ADMIN_CERT_DIR/tls/server.key
+
+	export CORE_PEER_TLS_KEY_FILE=$ADMIN_CERT_DIR/tls/server.key
+	export CORE_PEER_TLS_CERT_FILE=$ADMIN_CERT_DIR/tls/server.crt
+
+	export ORDERER_TLS_CA=$CRYPTO_DIR/cacerts/${ORDERER_ORG}/tls.${ORDERER_ORG}.pem
+	export ORDERER_PORT_ARGS="-o $ORDERER_HOST:7050 --tls --cafile $ORDERER_TLS_CA --clientauth"
+	export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
+}
+
 function initPeerAdminCLI() {
 
 	export CORE_PEER_MSPCONFIGPATH=$ADMIN_CERT_DIR/msp
