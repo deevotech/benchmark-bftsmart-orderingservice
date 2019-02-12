@@ -8,3 +8,8 @@ release-1.2/data
 release-1.2/setup
 release-1.2/data-config
 release-1.2/crypto-config
+
+release-1.4/data
+release-1.4/setup
+release-1.4/data-config
+release-1.4/crypto-config

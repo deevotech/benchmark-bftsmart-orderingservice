@@ -1,0 +1,378 @@
+# All elements in this file should depend on the base.yaml
+# Provided solo-base fabric network with:
+
+# rca.org0.bft
+# ca.org2.example.com
+# orderer.example.com
+# peer0.org1.example.com
+# peer0.org1.example.com
+# peer0.org2.example.com
+# peer0.org2.example.com
+# cli
+
+version: '2'  # v3 does not support 'extends' yet
+
+networks:
+  bftsmart:
+
+services:
+  rca.replicas.bft: # ca node for ordering nodes
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.replicas.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=replicas
+      - FABRIC_CA_SERVER_CA_NAME=rca.replicas.bft
+      - FABRIC_CA_SERVER_CSR_CN=rca.replicas.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.replicas.bft
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.replicas.bft-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.replicas.bft-cert.pem
+    ports:
+      - "8054:7054"
+    volumes:
+      - ../crypto-config/orgs/replicas/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org0.bft: # ca node for org0
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org0.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org0
+      - FABRIC_CA_SERVER_CA_NAME=rca.org0.bft
+      - FABRIC_CA_SERVER_CSR_CN=rca.org0.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org0.bft
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org0.bft-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
+      - SERVER_TYPE=orderer
+    ports:
+      - "7054:7054"
+    volumes:
+      - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org1.bft: # ca node for org1
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org1.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org1
+      - FABRIC_CA_SERVER_CA_NAME=rca.org1.bft
+      - FABRIC_CA_SERVER_CSR_CN=rca.org1.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org1.bft
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org1.bft-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
+    ports:
+      - "9054:7054"
+    volumes:
+      - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  rca.org2.bft: # ca node forbftsmart org2
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: rca.org2.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org2
+      - FABRIC_CA_SERVER_CA_NAME=rca.org2.bft
+      - FABRIC_CA_SERVER_CSR_CN=rca.org2.bft
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca.org2.bft
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org2.bft-cert.pem
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+    ports:
+      - "10054:7054"
+    volumes:
+      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+
+  bft.node.0:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: bft.node.0
+    networks:
+      - bftsmart
+    ports:
+      - "11000:11000"
+    environment:
+      - NUMBER=0
+
+  bft.node.1:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: bft.node.1
+    networks:
+      - bftsmart
+    ports:
+      - "11001:11000"
+    environment:
+      - NUMBER=1
+
+  bft.node.2:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: bft.node.2
+    networks:
+      - bftsmart
+    ports:
+      - "11002:11000"
+    environment:
+      - NUMBER=2
+
+  bft.node.3:
+    extends:
+      file: base.yaml
+      service: bft-node-base
+    container_name: bft.node.3
+    networks:
+      - bftsmart
+    ports:
+      - "11003:11000"
+    environment:
+      - NUMBER=3
+
+  orderer0.org0.bft:  # orderer in solo mode
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer0.org0.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org0
+      - NODE_ORG=replicas
+      - NODE_COUNT=4
+      - ORDERER_PASS=orderer0.org0.bftpw
+      - CORE_PEER_ID=orderer0.org0.bft
+      - ADMIN_NAME=admin-org0
+      - ADMIN_PASS=admin-org0pw
+      - ORDERING_CA_HOST=rca.replicas.bft
+      - CA_HOST=rca.org0.bft
+      - ADMINCERTS=true
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org0.bft:7054
+      - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
+      - ORDERING_CRYPTO_DIR=/var/hyperledger/crypto/replicas
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org0.bft-cert.pem
+      - ORG_MSP=/var/hyperledger/crypto/org/msp
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/fabric-ca-server-config/tls.rca.org0.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org1/tls.rca.org1.bft-cert.pem,/etc/hyperledger/fabric-ca-server-org2/tls.rca.org2.bft-cert.pem,/etc/hyperledger/fabric-ca-server-ordering/tls.rca.replicas.bft-cert.pem]
+    ports:
+      - "7050:7050"
+    volumes:
+      - ../crypto-config/orgs/org0/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-org1
+      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-org2
+      - ../crypto-config/orgs/replicas/ca/:/etc/hyperledger/fabric-ca-server-ordering
+
+      - ../crypto-config/orgs/replicas:/var/hyperledger/crypto/replicas
+      - ../crypto-config/orgs/replicas/msp:/var/hyperledger/crypto/replicas/msp
+      - ../crypto-config/orgs/replicas/msp/cacerts:/var/hyperledger/crypto/replicas/msp/cacerts
+      - ../crypto-config/orgs/replicas/msp/keystore:/var/hyperledger/crypto/replicas/msp/keystore
+      - ../crypto-config/orgs/replicas/msp/signcerts:/var/hyperledger/crypto/replicas/msp/signcerts
+      - ../crypto-config/orgs/replicas/msp/tlscacerts:/var/hyperledger/crypto/replicas/msp/tlscacerts
+      - ../crypto-config/orgs/replicas/msp/admincerts:/var/hyperledger/crypto/replicas/msp/admincerts
+
+      - ../crypto-config/orgs/org0/msp:/var/hyperledger/crypto/org/msp
+      - ../crypto-config/orgs/org0/msp/cacerts:/var/hyperledger/crypto/org/msp/cacerts
+      - ../crypto-config/orgs/org0/msp/keystore:/var/hyperledger/crypto/org/msp/keystore
+      - ../crypto-config/orgs/org0/msp/signcerts:/var/hyperledger/crypto/org/msp/signcerts
+      - ../crypto-config/orgs/org0/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
+      - ../crypto-config/orgs/org0/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
+
+      - ../crypto-config/orgs/org0/orderer0.org0.bft:/var/hyperledger/crypto/orderer
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/keystore:/var/hyperledger/crypto/orderer/msp/keystore
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/tlscacerts:/var/hyperledger/crypto/orderer/msp/tlscacerts
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/signcerts:/var/hyperledger/crypto/orderer/msp/signcerts
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/cacerts:/var/hyperledger/crypto/orderer/msp/cacerts
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/msp/admincerts:/var/hyperledger/crypto/orderer/msp/admincerts
+      - ../crypto-config/orgs/org0/orderer0.org0.bft/tls:/var/hyperledger/crypto/orderer/tls
+
+      - ../crypto-config/orgs/org0/admin:/var/hyperledger/crypto/admin
+      - ../crypto-config/orgs/org0/admin/msp/:/var/hyperledger/crypto/admin/msp
+      - ../crypto-config/orgs/org0/admin/msp/keystore:/var/hyperledger/crypto/admin/msp/keystore
+      - ../crypto-config/orgs/org0/admin/msp/tlscacerts:/var/hyperledger/crypto/admin/msp/tlscacerts
+      - ../crypto-config/orgs/org0/admin/msp/admincerts:/var/hyperledger/crypto/admin/msp/admincerts
+      - ../crypto-config/orgs/org0/admin/msp/signcerts:/var/hyperledger/crypto/admin/msp/signcerts
+      - ../crypto-config/orgs/org0/admin/msp/cacerts:/var/hyperledger/crypto/admin/msp/cacerts
+      - ../crypto-config/orgs/org0/admin/tls:/var/hyperledger/crypto/admin/tls
+
+      - ../data/channel-artifacts:/var/hyperledger/orderer
+    depends_on:
+      - rca.org0.bft
+      - rca.replicas.bft
+      - bft.node.0
+      - bft.node.1
+      - bft.node.2
+      - bft.node.3
+
+# ## following are peer nodes ##
+
+  peer0.org1.bft:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.org1.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org1
+      - PEER_PASS=peer0.org1.bftpw
+      - ADMIN_NAME=admin-org1
+      - ADMIN_PASS=admin-org1pw
+      - USER_NAME=user-org1
+      - USER_PASS=user-org1pw
+      - CA_HOST=rca.org1.bft
+      - ADMINCERTS=true
+      - CORE_PEER_ID=peer0.org1.bft
+      - CORE_PEER_ADDRESS=peer0.org1.bft:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org1.bft:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.bft:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org1.bft:7054
+      - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org1.bft-cert.pem
+      - ORG_MSP=/var/hyperledger/crypto/org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org1.bft-cert.pem
+    volumes:
+      - ../crypto-config/orgs/org1/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../crypto-config/orgs/org0/msp/:/etc/hyperledger/fabric/crypto-config/orgs/org0/msp
+
+      - ../crypto-config/orgs/org1/msp:/var/hyperledger/crypto/org/msp
+      - ../crypto-config/orgs/org1/msp/cacerts:/var/hyperledger/crypto/org/msp/cacerts
+      - ../crypto-config/orgs/org1/msp/keystore:/var/hyperledger/crypto/org/msp/keystore
+      - ../crypto-config/orgs/org1/msp/signcerts:/var/hyperledger/crypto/org/msp/signcerts
+      - ../crypto-config/orgs/org1/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
+      - ../crypto-config/orgs/org1/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
+
+      - ../crypto-config/orgs/org1/peer0.org1.bft:/var/hyperledger/crypto/peer
+      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
+      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
+      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
+      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
+      - ../crypto-config/orgs/org1/peer0.org1.bft/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
+      - ../crypto-config/orgs/org1/peer0.org1.bft/tls:/var/hyperledger/crypto/peer/tls
+
+      - ../crypto-config/orgs/org1/admin:/var/hyperledger/crypto/admin
+      - ../crypto-config/orgs/org1/admin/msp/:/var/hyperledger/crypto/admin/msp
+      - ../crypto-config/orgs/org1/admin/msp/keystore:/var/hyperledger/crypto/admin/msp/keystore
+      - ../crypto-config/orgs/org1/admin/msp/tlscacerts:/var/hyperledger/crypto/admin/msp/tlscacerts
+      - ../crypto-config/orgs/org1/admin/msp/admincerts:/var/hyperledger/crypto/admin/msp/admincerts
+      - ../crypto-config/orgs/org1/admin/msp/signcerts:/var/hyperledger/crypto/admin/msp/signcerts
+      - ../crypto-config/orgs/org1/admin/msp/cacerts:/var/hyperledger/crypto/admin/msp/cacerts
+      - ../crypto-config/orgs/org1/admin/tls:/var/hyperledger/crypto/admin/tls
+
+      - ../crypto-config/orgs/org1/user:/var/hyperledger/crypto/user
+      - ../crypto-config/orgs/org1/user/msp/:/var/hyperledger/crypto/user/msp
+      - ../crypto-config/orgs/org1/user/msp/keystore:/var/hyperledger/crypto/user/msp/keystore
+      - ../crypto-config/orgs/org1/user/msp/tlscacerts:/var/hyperledger/crypto/user/msp/tlscacerts
+      - ../crypto-config/orgs/org1/user/msp/admincerts:/var/hyperledger/crypto/user/msp/admincerts
+      - ../crypto-config/orgs/org1/user/msp/signcerts:/var/hyperledger/crypto/user/msp/signcerts
+      - ../crypto-config/orgs/org1/user/msp/cacerts:/var/hyperledger/crypto/user/msp/cacerts
+      - ../crypto-config/orgs/org1/user/tls:/var/hyperledger/crypto/user/tls
+
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+      - "7053:7053"
+    depends_on:
+      - rca.org1.bft
+      - orderer0.org0.bft
+
+  peer0.org2.bft:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.org2.bft
+    networks:
+      - bftsmart
+    environment:
+      - ORG=org2
+      - PEER_PASS=peer0.org2.bftpw
+      - ADMIN_NAME=admin-org2
+      - ADMIN_PASS=admin-org2pw
+      - USER_NAME=user-org2
+      - USER_PASS=user-org2pw
+      - CA_HOST=rca.org2.bft
+      - ADMINCERTS=true
+      - CORE_PEER_ID=peer0.org2.bft
+      - CORE_PEER_ADDRESS=peer0.org2.bft:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.org2.bft:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.bft:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.bft:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      - ENROLLMENT_URL=https://rca-admin:rca-adminpw@rca.org2.bft:7054
+      - ORG_ADMIN_HOME=/var/hyperledger/crypto/org/admin
+      - FABRIC_CA_CLIENT_HOME=/var/hyperledger/ca-client
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/etc/hyperledger/fabric-ca-server-config/rca.org2.bft-cert.pem
+      - ORG_MSP=/var/hyperledger/crypto/org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric-ca-server-config/tls.rca.org2.bft-cert.pem
+    volumes:
+      - ../crypto-config/orgs/org2/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../crypto-config/orgs/org0/msp/:/etc/hyperledger/fabric/crypto-config/orgs/org0/msp
+
+      - ../crypto-config/orgs/org2/msp:/var/hyperledger/crypto/org/msp
+      - ../crypto-config/orgs/org2/msp/cacerts:/var/hyperledger/crypto/org/msp/cacerts
+      - ../crypto-config/orgs/org2/msp/keystore:/var/hyperledger/crypto/org/msp/keystore
+      - ../crypto-config/orgs/org2/msp/signcerts:/var/hyperledger/crypto/org/msp/signcerts
+      - ../crypto-config/orgs/org2/msp/tlscacerts:/var/hyperledger/crypto/org/msp/tlscacerts
+      - ../crypto-config/orgs/org2/msp/admincerts:/var/hyperledger/crypto/org/msp/admincerts
+
+      - ../crypto-config/orgs/org2/peer0.org2.bft:/var/hyperledger/crypto/peer
+      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/keystore:/var/hyperledger/crypto/peer/msp/keystore
+      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/tlscacerts:/var/hyperledger/crypto/peer/msp/tlscacerts
+      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/signcerts:/var/hyperledger/crypto/peer/msp/signcerts
+      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/cacerts:/var/hyperledger/crypto/peer/msp/cacerts
+      - ../crypto-config/orgs/org2/peer0.org2.bft/msp/admincerts:/var/hyperledger/crypto/peer/msp/admincerts
+      - ../crypto-config/orgs/org2/peer0.org2.bft/tls:/var/hyperledger/crypto/peer/tls
+
+      - ../crypto-config/orgs/org2/admin:/var/hyperledger/crypto/admin
+      - ../crypto-config/orgs/org2/admin/msp/:/var/hyperledger/crypto/admin/msp
+      - ../crypto-config/orgs/org2/admin/msp/keystore:/var/hyperledger/crypto/admin/msp/keystore
+      - ../crypto-config/orgs/org2/admin/msp/tlscacerts:/var/hyperledger/crypto/admin/msp/tlscacerts
+      - ../crypto-config/orgs/org2/admin/msp/admincerts:/var/hyperledger/crypto/admin/msp/admincerts
+      - ../crypto-config/orgs/org2/admin/msp/signcerts:/var/hyperledger/crypto/admin/msp/signcerts
+      - ../crypto-config/orgs/org2/admin/msp/cacerts:/var/hyperledger/crypto/admin/msp/cacerts
+      - ../crypto-config/orgs/org2/admin/tls:/var/hyperledger/crypto/admin/tls
+
+      - ../crypto-config/orgs/org2/user:/var/hyperledger/crypto/user
+      - ../crypto-config/orgs/org2/user/msp/:/var/hyperledger/crypto/user/msp
+      - ../crypto-config/orgs/org2/user/msp/keystore:/var/hyperledger/crypto/user/msp/keystore
+      - ../crypto-config/orgs/org2/user/msp/tlscacerts:/var/hyperledger/crypto/user/msp/tlscacerts
+      - ../crypto-config/orgs/org2/user/msp/admincerts:/var/hyperledger/crypto/user/msp/admincerts
+      - ../crypto-config/orgs/org2/user/msp/signcerts:/var/hyperledger/crypto/user/msp/signcerts
+      - ../crypto-config/orgs/org2/user/msp/cacerts:/var/hyperledger/crypto/user/msp/cacerts
+      - ../crypto-config/orgs/org2/user/tls:/var/hyperledger/crypto/user/tls
+
+    ports:
+      - "9051:7051"
+      - "9052:7052"
+      - "9053:7053"
+    depends_on:
+      - rca.org2.bft
+      - orderer0.org0.bft
+
+  cli: # client node
+    extends:
+      file: base.yaml
+      service: cli-base
+    container_name: fabric-cli
+    networks:
+      - bftsmart
+    environment:
+      - CHANNEL_ID=mychannel
+      - PEER_ORGS=org1 org2
+    depends_on:
+      - peer0.org1.bft
+      - peer0.org2.bft
+
